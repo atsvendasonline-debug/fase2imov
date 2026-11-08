@@ -1,8 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import axios from "axios";
 import { Toaster } from "sonner";
 import "@/App.css";
+import { Seo } from "@/components/Seo";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Marquee } from "@/components/Marquee";
@@ -57,7 +59,7 @@ function paramsParaApi(f) {
   };
 }
 
-const Home = () => {
+const Home = ({ seo }) => {
   const [cidades, setCidades] = useState([]);
   const [estados, setEstados] = useState([]);
   const [locais, setLocais] = useState([]);
@@ -151,6 +153,7 @@ const Home = () => {
 
   return (
     <div className="bg-[#FAF6F0] min-h-screen selection:bg-[#E25C48]/20 selection:text-[#B83D2B]">
+      <Seo {...seo} />
       <Header />
       <Hero />
       <Marquee />
@@ -191,22 +194,40 @@ const Home = () => {
   );
 };
 
-const ImovelRedirect = () => {
+const ImovelPage = () => {
+  const { id } = useParams();
+  const [seo, setSeo] = useState({});
+
   useEffect(() => {
-    window.location.replace("/#feed");
-  }, []);
-  return null;
+    axios.get(`${API}/listings`).then(({ data }) => {
+      const l = [...data.locais, ...data.sugestoes].find((x) => x.id === id);
+      if (l) {
+        const preco = Number(l.preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+        const sufixo = l.finalidade === "aluguel" ? " /mês" : l.finalidade === "temporada" ? " /dia" : "";
+        setSeo({
+          title: `${l.tipo} em ${l.bairro}, ${l.cidade} — ${preco}${sufixo} | ImovLocal`,
+          description: `${l.legenda} — ${l.bairro}, ${l.cidade}. Veja fotos e fale com o anunciante no ImovLocal (demonstração).`,
+          image: l.fotos[0],
+        });
+      }
+    }).catch(() => {});
+    document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" });
+  }, [id]);
+
+  return <Home seo={seo} scrollToFeed />;
 };
 
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/imovel/:id" element={<ImovelRedirect />} />
-        </Routes>
-      </BrowserRouter>
+      <HelmetProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home seo={{}} />} />
+            <Route path="/imovel/:id" element={<ImovelPage />} />
+          </Routes>
+        </BrowserRouter>
+      </HelmetProvider>
     </div>
   );
 }

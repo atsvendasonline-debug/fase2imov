@@ -1,0 +1,16 @@
+# ImovLocal
+
+> Portal brasileiro de imóveis com experiência social, em fase de protótipo: feed vertical de anúncios fictícios de demonstração para compra e aluguel em várias cidades do Brasil.
+
+## O que o site oferece
+- Feed de imóveis com fotos, preço, cidade/bairro, tipo e legenda, com curtir, compartilhar e botão de conversa pelo WhatsApp.
+- Busca simples por cidade ou bairro e busca detalhada com finalidade, localização, tipos de imóvel, faixa de preço, quartos, banheiros, vagas, área e palavra-chave.
+- Formulário demonstrativo "Anunciar imóvel" (anúncios não ficam salvos nesta fase).
+
+## Páginas
+- / — página inicial com apresentação, busca, feed e formulário de anúncio.
+- /imovel/{id} — URL estável de cada anúncio, com metadados de compartilhamento (Open Graph e Twitter/X).
+- /api/share/imovel/{id} — versão do link de compartilhamento com metadados no HTML inicial, legível por robôs de redes sociais.
+
+## Observação
+Todos os imóveis exibidos nesta fase são fictícios e servem apenas para demonstração. Nenhum número de telefone real é publicado.

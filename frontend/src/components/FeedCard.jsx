@@ -11,7 +11,7 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
   const [index, setIndex] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = `${window.location.origin}/imovel/${listing.id}`;
+  const shareUrl = `${process.env.REACT_APP_BACKEND_URL}/api/share/imovel/${listing.id}`;
 
   const handleShare = async () => {
     const data = {

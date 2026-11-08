@@ -10,7 +10,7 @@ armazenamento de arquivos compatível com S3 — nunca bytes no banco.
 """
 
 def _u(photo_id: str) -> str:
-    return f"https://images.unsplash.com/{photo_id}?auto=format&fit=crop&w=960&h=1200&q=80"
+    return f"https://images.unsplash.com/{photo_id}?auto=format&fit=crop&q=80&w=960&h=1200"
 
 
 LISTINGS = [

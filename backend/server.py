@@ -12,11 +12,15 @@ from pathlib import Path
 from typing import List, Literal, Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, APIRouter, Query
+from fastapi import FastAPI, APIRouter, Query, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.cors import CORSMiddleware
 
 from data import LISTINGS
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+INDEX_HTML = BASE_DIR / "frontend" / "public" / "index.html"
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -176,6 +180,52 @@ async def create_demo_listing(input: ListingCreate):
     }
     DEMO_LISTINGS.append(doc)
     return ListingOut(**doc, criado_em=datetime.now(timezone.utc))
+
+
+def _fmt_preco(listing: dict) -> str:
+    v = f"R$ {listing['preco']:,.0f}".replace(",", ".")
+    if listing["finalidade"] == "aluguel":
+        return f"{v} /mês"
+    if listing["finalidade"] == "temporada":
+        return f"{v} /dia"
+    return v
+
+
+@api_router.get("/share/imovel/{listing_id}", response_class=HTMLResponse)
+async def share_imovel(listing_id: str, request: Request):
+    """Serve o index.html do app com metadados Open Graph/Twitter do imóvel,
+    para que robôs de compartilhamento (WhatsApp, Facebook, X) leiam a prévia
+    direto do HTML, sem executar JavaScript."""
+    base = str(request.base_url).rstrip("/")
+    listing = next((l for l in LISTINGS if l["id"] == listing_id), None)
+    html = INDEX_HTML.read_text(encoding="utf-8")
+
+    if listing is not None:
+        foto = listing["fotos"][0].replace("w=960&h=1200", "w=1200&h=630") if listing["fotos"] else ""
+        preco = _fmt_preco(listing)
+        finalidade = {"aluguel": "Aluguel", "venda": "Venda", "temporada": "Temporada"}.get(listing["finalidade"], listing["finalidade"])
+        titulo = f"{listing['tipo']} em {listing['bairro']}, {listing['cidade']} — {preco} | ImovLocal"
+        descricao = f"{finalidade}: {listing['legenda']} — {listing['bairro']}, {listing['cidade']}. Veja fotos e fale com o anunciante no ImovLocal (demonstração)."
+        url = f"{base}/imovel/{listing['id']}"
+        og = f"""<meta property="og:type" content="website" />
+        <meta property="og:site_name" content="ImovLocal" />
+        <meta property="og:title" content="{titulo}" />
+        <meta property="og:description" content="{descricao}" />
+        <meta property="og:url" content="{url}" />
+        <meta property="og:image" content="{foto}" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="{listing['tipo']} em {listing['bairro']}, {listing['cidade']}" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="{titulo}" />
+        <meta name="twitter:description" content="{descricao}" />
+        <meta name="twitter:image" content="{foto}" />
+        <title>{titulo}</title>
+        """
+        html = html.replace("</head>", f"{og}</head>", 1)
+
+    return HTMLResponse(content=html)
 
 
 app.include_router(api_router)
