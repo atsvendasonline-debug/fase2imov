@@ -12,7 +12,9 @@ import { Marquee } from "@/components/Marquee";
 import { FilterBar } from "@/components/FilterBar";
 import { FilterPanel } from "@/components/FilterPanel";
 import { Feed } from "@/components/Feed";
-import { AnunciarForm } from "@/components/AnunciarForm";
+import { AnunciarSection } from "@/components/AnunciarSection";
+import { MeusAnunciosPage } from "@/components/MeusAnunciosPage";
+import { PerfilPage } from "@/components/PerfilPage";
 import { MapaDemo } from "@/components/MapaDemo";
 import { Footer } from "@/components/Footer";
 import { FILTROS_VAZIOS, MATCH_POR_ROTULO } from "@/lib/filterOptions";
@@ -60,7 +62,7 @@ function paramsParaApi(f) {
   };
 }
 
-const Home = ({ seo, likedIds, onToggleLike }) => {
+const Home = ({ seo, likedIds, onToggleLike, demoListings, onDemoCriado }) => {
   const [cidades, setCidades] = useState([]);
   const [estados, setEstados] = useState([]);
   const [locais, setLocais] = useState([]);
@@ -72,7 +74,6 @@ const Home = ({ seo, likedIds, onToggleLike }) => {
   const [aplicado, setAplicado] = useState(FILTROS_VAZIOS); // o que foi aplicado ao feed
   const [panelOpen, setPanelOpen] = useState(false);
 
-  const [demoListings, setDemoListings] = useState([]);
   const [mapaDestaque, setMapaDestaque] = useState(null);
 
   const carregar = useCallback(async (params = {}) => {
@@ -133,10 +134,6 @@ const Home = ({ seo, likedIds, onToggleLike }) => {
 
   const chips = montarChips(aplicado);
 
-  const handlePublicado = (listing) => {
-    setDemoListings((prev) => [listing, ...prev]);
-  };
-
   const handleVerMapa = (listing) => {
     setMapaDestaque(listing);
     document.getElementById("mapa")?.scrollIntoView({ behavior: "smooth" });
@@ -177,7 +174,7 @@ const Home = ({ seo, likedIds, onToggleLike }) => {
         onRemoverFiltro={removerFiltro}
         onLimparFiltros={limparFiltros}
       />
-      <AnunciarForm api={API} onPublicado={handlePublicado} />
+      <AnunciarSection onPublicado={onDemoCriado} />
       <MapaDemo destaque={mapaDestaque} />
       <Footer />
     </div>
@@ -186,6 +183,7 @@ const Home = ({ seo, likedIds, onToggleLike }) => {
 
 function App() {
   const [likedIds, setLikedIds] = useState(new Set());
+  const [demoListings, setDemoListings] = useState([]);
 
   const handleToggleLike = (id) => {
     setLikedIds((prev) => {
@@ -196,13 +194,34 @@ function App() {
     });
   };
 
+  const handleDemoSalvar = (dados, idEdicao) => {
+    if (idEdicao) {
+      setDemoListings((prev) => prev.map((l) => (l.id === idEdicao ? { ...l, ...dados } : l)));
+    } else {
+      setDemoListings((prev) => [{
+        id: `demo-${Date.now()}`,
+        estado: dados.estado || "",
+        detalhes: "",
+        curtidas: 0,
+        whatsapp: dados.whatsapp || "",
+        ...dados,
+      }, ...prev]);
+    }
+  };
+
+  const handleDemoRemover = (id) => {
+    setDemoListings((prev) => prev.filter((l) => l.id !== id));
+  };
+
   return (
     <div className="App">
       <HelmetProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home seo={{}} likedIds={likedIds} onToggleLike={handleToggleLike} />} />
+            <Route path="/" element={<Home seo={{}} likedIds={likedIds} onToggleLike={handleToggleLike} demoListings={demoListings} onDemoCriado={handleDemoSalvar} />} />
             <Route path="/imovel/:id" element={<ImovelPage likedIds={likedIds} onToggleLike={handleToggleLike} />} />
+            <Route path="/meus-anuncios" element={<MeusAnunciosPage demoListings={demoListings} onSalvar={handleDemoSalvar} onRemover={handleDemoRemover} likedIds={likedIds} onToggleLike={handleToggleLike} />} />
+            <Route path="/perfil" element={<PerfilPage />} />
           </Routes>
         </BrowserRouter>
       </HelmetProvider>
