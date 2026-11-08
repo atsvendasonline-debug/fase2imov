@@ -97,6 +97,7 @@ export const AnunciarForm = ({ api, onPublicado }) => {
                 <select id="f-finalidade" value={form.finalidade} onChange={set("finalidade")} className={inputClass} data-testid="anunciar-finalidade-select">
                   <option value="aluguel">Aluguel</option>
                   <option value="venda">Venda</option>
+                  <option value="temporada">Temporada</option>
                 </select>
               </div>
               <div>

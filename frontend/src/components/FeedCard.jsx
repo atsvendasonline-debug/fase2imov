@@ -59,8 +59,8 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
             <p className="font-mono text-[10px] text-[#221814]/60">{listing.bairro}, {listing.cidade}</p>
           </div>
         </div>
-        <span className={`px-2 py-0.5 rounded font-mono text-[10px] uppercase tracking-wider ${listing.finalidade === "aluguel" ? "bg-[#221814] text-[#FAF6F0]" : "bg-[#E25C48] text-white"}`}>
-          {listing.finalidade === "aluguel" ? "Aluguel" : "Venda"}
+        <span className={`px-2 py-0.5 rounded font-mono text-[10px] uppercase tracking-wider ${listing.finalidade === "venda" ? "bg-[#E25C48] text-white" : "bg-[#221814] text-[#FAF6F0]"}`}>
+          {listing.finalidade === "venda" ? "Venda" : listing.finalidade === "temporada" ? "Temporada" : "Aluguel"}
         </span>
       </div>
 

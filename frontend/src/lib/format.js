@@ -4,7 +4,9 @@ export function formatPreco(listing) {
     currency: "BRL",
     maximumFractionDigits: 0,
   });
-  return listing.finalidade === "aluguel" ? `${v} /mês` : v;
+  if (listing.finalidade === "aluguel") return `${v} /mês`;
+  if (listing.finalidade === "temporada") return `${v} /dia`;
+  return v;
 }
 
 export function buildWaLink(phone, listing) {

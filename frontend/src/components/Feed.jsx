@@ -1,5 +1,5 @@
 import { FeedCard } from "./FeedCard";
-import { MapPinOff } from "lucide-react";
+import { MapPinOff, X } from "lucide-react";
 
 const DemoBadge = () => (
   <span className="px-2 py-0.5 rounded bg-[#F0E8DC] border border-[#E25C48]/40 text-[#B83D2B] font-mono text-[10px] uppercase tracking-wider">
@@ -7,7 +7,36 @@ const DemoBadge = () => (
   </span>
 );
 
-export const Feed = ({ locais, sugestoes, busca, likedIds, onToggleLike, onVerMapa, loading }) => {
+const ActiveChips = ({ chips, onRemover, onLimpar }) => {
+  if (chips.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2" data-testid="active-filters">
+      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#221814]/50">Filtros ativos:</span>
+      {chips.map((c) => (
+        <button
+          key={c.chave}
+          type="button"
+          onClick={() => onRemover(c.chave)}
+          className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E25C48]/10 border border-[#E25C48]/30 text-[#B83D2B] font-mono text-[11px] hover:bg-[#E25C48]/20 transition-colors"
+          data-testid={`chip-remover-${c.chave}`}
+        >
+          {c.rotulo}
+          <X className="w-3 h-3" />
+        </button>
+      ))}
+      <button
+        type="button"
+        onClick={onLimpar}
+        className="px-3 py-1 rounded-full font-mono text-[11px] uppercase tracking-wider text-[#221814]/60 underline hover:text-[#E25C48] transition-colors"
+        data-testid="limpar-filtros-feed-button"
+      >
+        Limpar tudo
+      </button>
+    </div>
+  );
+};
+
+export const Feed = ({ locais, sugestoes, busca, likedIds, onToggleLike, onVerMapa, loading, chips, onRemoverFiltro, onLimparFiltros }) => {
   const total = locais.length + sugestoes.length;
 
   return (
@@ -20,20 +49,30 @@ export const Feed = ({ locais, sugestoes, busca, likedIds, onToggleLike, onVerMa
               Feed de imóveis
             </h2>
           </div>
-          <p className="text-sm font-mono text-[#221814]/60 uppercase tracking-wider">
-            {loading ? "Buscando..." : `${total} ${total === 1 ? "anúncio fictício" : "anúncios fictícios"} • demonstração`}
+          <p className="text-sm font-mono text-[#221814]/60 uppercase tracking-wider" data-testid="contagem-resultados">
+            {loading ? "Buscando..." : `${total} ${total === 1 ? "anúncio encontrado" : "anúncios encontrados"} • demonstração`}
           </p>
         </div>
+
+        <ActiveChips chips={chips} onRemover={onRemoverFiltro} onLimpar={onLimparFiltros} />
 
         {!loading && total === 0 && (
           <div className="flex flex-col items-center gap-4 py-16 text-center" data-testid="empty-feed-message">
             <MapPinOff className="w-10 h-10 text-[#221814]/30" />
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/60">
-              Nenhum anúncio de demonstração encontrado para esses filtros.
+              Nenhum anúncio de demonstração encontrado com esses filtros.
             </p>
             <p className="text-sm text-[#221814]/70 max-w-md">
-              Tente outra cidade, outro bairro ou amplie a faixa de preço. Nesta fase, todos os imóveis são fictícios e servem apenas para demonstrar a experiência.
+              Tente ampliar a faixa de preço, remover algum tipo de imóvel ou palavra-chave. Nesta fase, todos os imóveis são fictícios e servem apenas para demonstrar a experiência.
             </p>
+            <button
+              type="button"
+              onClick={onLimparFiltros}
+              className="px-6 py-3 rounded-full bg-[#221814] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-semibold hover:bg-[#E25C48] transition-colors"
+              data-testid="limpar-filtros-empty-button"
+            >
+              Limpar filtros
+            </button>
           </div>
         )}
 

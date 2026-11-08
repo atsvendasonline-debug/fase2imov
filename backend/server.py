@@ -34,11 +34,13 @@ class Listing(BaseModel):
     bairro: str
     estado: str
     tipo: str  # Apartamento | Casa | Studio | Loft | Cobertura | Kitnet
-    finalidade: str  # aluguel | venda
+    finalidade: str  # aluguel | venda | temporada
     preco: float
     condominio: Optional[float] = None
     area_m2: int
     quartos: int
+    banheiros: int = 0
+    vagas: int = 0
     legenda: str
     detalhes: str
     whatsapp: str
@@ -51,7 +53,7 @@ class ListingCreate(BaseModel):
     cidade: str
     bairro: str
     tipo: str
-    finalidade: Literal["aluguel", "venda"]
+    finalidade: Literal["aluguel", "venda", "temporada"]
     preco: float
     whatsapp: str
     legenda: str = ""
@@ -72,22 +74,53 @@ async def root():
 async def list_listings(
     q: str = "",
     finalidade: str = "todos",
-    tipo: str = "todos",
+    tipos: str = "",
+    estado: str = "todos",
+    cidade: str = "todas",
+    bairro: str = "",
     preco_min: float = 0,
     preco_max: float = 0,
+    quartos_min: int = 0,
+    banheiros_min: int = 0,
+    vagas_min: int = 0,
+    area_min: int = 0,
+    area_max: int = 0,
+    palavra: str = "",
 ):
     """Feed ordenado: resultados da localização pesquisada primeiro,
     depois sugestões de outras cidades. Sem repetições."""
     qn = q.strip().lower()
     items = [l for l in LISTINGS]
-    if finalidade in ("aluguel", "venda"):
+    if finalidade in ("aluguel", "venda", "temporada"):
         items = [l for l in items if l["finalidade"] == finalidade]
-    if tipo != "todos":
-        items = [l for l in items if l["tipo"] == tipo]
+    if tipos:
+        selecionados = {t for t in tipos.split(",") if t}
+        if selecionados:
+            items = [l for l in items if l["tipo"] in selecionados]
+    if estado != "todos":
+        items = [l for l in items if l["estado"] == estado]
+    if cidade != "todas":
+        items = [l for l in items if l["cidade"] == cidade]
+    if bairro.strip():
+        bn = bairro.strip().lower()
+        items = [l for l in items if bn in l["bairro"].lower()]
     if preco_min > 0:
         items = [l for l in items if l["preco"] >= preco_min]
     if preco_max > 0:
         items = [l for l in items if l["preco"] <= preco_max]
+    if quartos_min > 0:
+        items = [l for l in items if l["quartos"] >= quartos_min]
+    if banheiros_min > 0:
+        items = [l for l in items if l.get("banheiros", 0) >= banheiros_min]
+    if vagas_min > 0:
+        items = [l for l in items if l.get("vagas", 0) >= vagas_min]
+    if area_min > 0:
+        items = [l for l in items if l["area_m2"] >= area_min]
+    if area_max > 0:
+        items = [l for l in items if l["area_m2"] <= area_max]
+    if palavra.strip():
+        pn = palavra.strip().lower()
+        items = [l for l in items if pn in f"{l['legenda']} {l['detalhes']}".lower()]
 
     if qn:
         locais = [l for l in items if qn in f"{l['cidade']} {l['bairro']}".lower()]
@@ -111,8 +144,7 @@ async def facets():
     return {
         "tipos": sorted({l["tipo"] for l in LISTINGS}),
         "cidades": sorted({l["cidade"] for l in LISTINGS}),
-        "preco_max_aluguel": max(l["preco"] for l in LISTINGS if l["finalidade"] == "aluguel"),
-        "preco_max_venda": max(l["preco"] for l in LISTINGS if l["finalidade"] == "venda"),
+        "estados": sorted({l["estado"] for l in LISTINGS if l["estado"]}),
     }
 
 

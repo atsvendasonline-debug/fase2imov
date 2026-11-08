@@ -6,26 +6,68 @@ import "@/App.css";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import { Marquee } from "@/components/Marquee";
-import { Filters } from "@/components/Filters";
+import { FilterBar } from "@/components/FilterBar";
+import { FilterPanel } from "@/components/FilterPanel";
 import { Feed } from "@/components/Feed";
 import { AnunciarForm } from "@/components/AnunciarForm";
 import { MapaDemo } from "@/components/MapaDemo";
 import { Footer } from "@/components/Footer";
+import { FILTROS_VAZIOS, MATCH_POR_ROTULO } from "@/lib/filterOptions";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const FAIXA_INICIAL = { label: "Todas as faixas", min: 0, max: 0 };
+
+const fmtMoeda = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+function montarChips(f) {
+  const chips = [];
+  if (f.q) chips.push({ chave: "q", rotulo: `Busca: ${f.q}` });
+  if (f.finalidade !== "todos") chips.push({ chave: "finalidade", rotulo: f.finalidade === "venda" ? "Venda" : f.finalidade === "aluguel" ? "Aluguel" : "Temporada" });
+  f.tipos.forEach((t) => chips.push({ chave: `tipo:${t}`, rotulo: t }));
+  if (f.estado !== "todos") chips.push({ chave: "estado", rotulo: `UF: ${f.estado}` });
+  if (f.cidade !== "todas") chips.push({ chave: "cidade", rotulo: f.cidade });
+  if (f.bairro) chips.push({ chave: "bairro", rotulo: `Bairro: ${f.bairro}` });
+  if (f.precoMin > 0) chips.push({ chave: "precoMin", rotulo: `A partir de ${fmtMoeda(f.precoMin)}` });
+  if (f.precoMax > 0) chips.push({ chave: "precoMax", rotulo: `Até ${fmtMoeda(f.precoMax)}` });
+  if (f.quartosMin > 0) chips.push({ chave: "quartosMin", rotulo: `${f.quartosMin}+ quartos` });
+  if (f.banheirosMin > 0) chips.push({ chave: "banheirosMin", rotulo: `${f.banheirosMin}+ banheiros` });
+  if (f.vagasMin > 0) chips.push({ chave: "vagasMin", rotulo: `${f.vagasMin}+ vagas` });
+  if (f.areaMin > 0) chips.push({ chave: "areaMin", rotulo: `Área a partir de ${f.areaMin} m²` });
+  if (f.areaMax > 0) chips.push({ chave: "areaMax", rotulo: `Área até ${f.areaMax} m²` });
+  if (f.palavra) chips.push({ chave: "palavra", rotulo: `"${f.palavra}"` });
+  return chips;
+}
+
+function paramsParaApi(f) {
+  const tiposReais = [...new Set(f.tipos.flatMap((t) => MATCH_POR_ROTULO[t] || []))];
+  return {
+    q: f.q,
+    finalidade: f.finalidade,
+    tipos: tiposReais.join(","),
+    estado: f.estado,
+    cidade: f.cidade,
+    bairro: f.bairro,
+    preco_min: f.precoMin,
+    preco_max: f.precoMax,
+    quartos_min: f.quartosMin,
+    banheiros_min: f.banheirosMin,
+    vagas_min: f.vagasMin,
+    area_min: f.areaMin,
+    area_max: f.areaMax,
+    palavra: f.palavra,
+  };
+}
 
 const Home = () => {
-  const [tipos, setTipos] = useState([]);
+  const [cidades, setCidades] = useState([]);
+  const [estados, setEstados] = useState([]);
   const [locais, setLocais] = useState([]);
   const [sugestoes, setSugestoes] = useState([]);
   const [buscaAplicada, setBuscaAplicada] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const [q, setQ] = useState("");
-  const [finalidade, setFinalidade] = useState("todos");
-  const [tipo, setTipo] = useState("todos");
-  const [faixa, setFaixa] = useState(FAIXA_INICIAL);
+  const [draft, setDraft] = useState(FILTROS_VAZIOS); // o que está na barra/painel
+  const [aplicado, setAplicado] = useState(FILTROS_VAZIOS); // o que foi aplicado ao feed
+  const [panelOpen, setPanelOpen] = useState(false);
 
   const [likedIds, setLikedIds] = useState(new Set());
   const [demoListings, setDemoListings] = useState([]);
@@ -48,19 +90,46 @@ const Home = () => {
 
   useEffect(() => {
     carregar();
-    axios.get(`${API}/facets`).then(({ data }) => setTipos(data.tipos)).catch(() => {});
+    axios.get(`${API}/facets`).then(({ data }) => {
+      setCidades(data.cidades);
+      setEstados(data.estados);
+    }).catch(() => {});
   }, [carregar]);
 
-  const handleBuscar = () => {
-    carregar({
-      q,
-      finalidade,
-      tipo,
-      preco_min: faixa.min,
-      preco_max: faixa.max,
-    });
+  const aplicarFiltros = (f) => {
+    setAplicado(f);
+    carregar(paramsParaApi(f));
+    setPanelOpen(false);
     document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const handleBuscar = () => aplicarFiltros({ ...aplicado, q: draft.q });
+
+  const limparFiltros = () => {
+    setDraft(FILTROS_VAZIOS);
+    aplicarFiltros(FILTROS_VAZIOS);
+  };
+
+  const removerFiltro = (chave) => {
+    const f = { ...aplicado };
+    if (chave.startsWith("tipo:")) {
+      f.tipos = f.tipos.filter((t) => t !== chave.slice(5));
+    } else if (chave === "finalidade") {
+      f.finalidade = "todos";
+    } else if (chave === "estado") {
+      f.estado = "todos";
+    } else if (chave === "cidade") {
+      f.cidade = "todas";
+    } else if (chave === "q" || chave === "bairro" || chave === "palavra") {
+      f[chave] = "";
+    } else {
+      f[chave] = 0;
+    }
+    setDraft(f);
+    aplicarFiltros(f);
+  };
+
+  const chips = montarChips(aplicado);
 
   const handleToggleLike = (id) => {
     setLikedIds((prev) => {
@@ -85,17 +154,22 @@ const Home = () => {
       <Header />
       <Hero />
       <Marquee />
-      <Filters
-        tipos={tipos}
-        q={q}
-        finalidade={finalidade}
-        tipo={tipo}
-        faixa={faixa}
-        onQChange={setQ}
-        onFinalidade={(f) => { setFinalidade(f); setFaixa(FAIXA_INICIAL); }}
-        onTipo={setTipo}
-        onFaixa={setFaixa}
+      <FilterBar
+        q={draft.q}
+        onQChange={(v) => setDraft((f) => ({ ...f, q: v }))}
         onBuscar={handleBuscar}
+        onAbrirFiltros={() => { setDraft(aplicado); setPanelOpen(true); }}
+        totalAtivos={chips.length}
+      />
+      <FilterPanel
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+        filtros={draft}
+        setFiltros={setDraft}
+        onAplicar={() => aplicarFiltros(draft)}
+        onLimpar={limparFiltros}
+        cidades={cidades}
+        estados={estados}
       />
       <Feed
         locais={[...demoListings, ...locais]}
@@ -105,6 +179,9 @@ const Home = () => {
         onToggleLike={handleToggleLike}
         onVerMapa={handleVerMapa}
         loading={loading}
+        chips={chips}
+        onRemoverFiltro={removerFiltro}
+        onLimparFiltros={limparFiltros}
       />
       <AnunciarForm api={API} onPublicado={handlePublicado} />
       <MapaDemo destaque={mapaDestaque} />
