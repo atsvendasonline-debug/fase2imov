@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { BrowserRouter, Routes, Route, useParams } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import axios from "axios";
 import { Toaster } from "sonner";
 import "@/App.css";
 import { Seo } from "@/components/Seo";
 import { Header } from "@/components/Header";
+import { ImovelPage } from "@/components/ImovelPage";
 import { Hero } from "@/components/Hero";
 import { Marquee } from "@/components/Marquee";
 import { FilterBar } from "@/components/FilterBar";
@@ -59,7 +60,7 @@ function paramsParaApi(f) {
   };
 }
 
-const Home = ({ seo }) => {
+const Home = ({ seo, likedIds, onToggleLike }) => {
   const [cidades, setCidades] = useState([]);
   const [estados, setEstados] = useState([]);
   const [locais, setLocais] = useState([]);
@@ -71,7 +72,6 @@ const Home = ({ seo }) => {
   const [aplicado, setAplicado] = useState(FILTROS_VAZIOS); // o que foi aplicado ao feed
   const [panelOpen, setPanelOpen] = useState(false);
 
-  const [likedIds, setLikedIds] = useState(new Set());
   const [demoListings, setDemoListings] = useState([]);
   const [mapaDestaque, setMapaDestaque] = useState(null);
 
@@ -133,15 +133,6 @@ const Home = ({ seo }) => {
 
   const chips = montarChips(aplicado);
 
-  const handleToggleLike = (id) => {
-    setLikedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
   const handlePublicado = (listing) => {
     setDemoListings((prev) => [listing, ...prev]);
   };
@@ -179,7 +170,7 @@ const Home = ({ seo }) => {
         sugestoes={sugestoes}
         busca={buscaAplicada}
         likedIds={likedIds}
-        onToggleLike={handleToggleLike}
+        onToggleLike={onToggleLike}
         onVerMapa={handleVerMapa}
         loading={loading}
         chips={chips}
@@ -189,45 +180,33 @@ const Home = ({ seo }) => {
       <AnunciarForm api={API} onPublicado={handlePublicado} />
       <MapaDemo destaque={mapaDestaque} />
       <Footer />
-      <Toaster position="bottom-center" richColors />
     </div>
   );
 };
 
-const ImovelPage = () => {
-  const { id } = useParams();
-  const [seo, setSeo] = useState({});
-
-  useEffect(() => {
-    axios.get(`${API}/listings`).then(({ data }) => {
-      const l = [...data.locais, ...data.sugestoes].find((x) => x.id === id);
-      if (l) {
-        const preco = Number(l.preco).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-        const sufixo = l.finalidade === "aluguel" ? " /mês" : l.finalidade === "temporada" ? " /dia" : "";
-        setSeo({
-          title: `${l.tipo} em ${l.bairro}, ${l.cidade} — ${preco}${sufixo} | ImovLocal`,
-          description: `${l.legenda} — ${l.bairro}, ${l.cidade}. Veja fotos e fale com o anunciante no ImovLocal (demonstração).`,
-          image: l.fotos[0],
-        });
-      }
-    }).catch(() => {});
-    document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" });
-  }, [id]);
-
-  return <Home seo={seo} scrollToFeed />;
-};
-
 function App() {
+  const [likedIds, setLikedIds] = useState(new Set());
+
+  const handleToggleLike = (id) => {
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   return (
     <div className="App">
       <HelmetProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Home seo={{}} />} />
-            <Route path="/imovel/:id" element={<ImovelPage />} />
+            <Route path="/" element={<Home seo={{}} likedIds={likedIds} onToggleLike={handleToggleLike} />} />
+            <Route path="/imovel/:id" element={<ImovelPage likedIds={likedIds} onToggleLike={handleToggleLike} />} />
           </Routes>
         </BrowserRouter>
       </HelmetProvider>
+      <Toaster position="bottom-center" richColors />
     </div>
   );
 }

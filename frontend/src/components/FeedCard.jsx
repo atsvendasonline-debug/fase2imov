@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin } from "lucide-react";
 import { toast } from "sonner";
@@ -12,6 +13,7 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
   const [copied, setCopied] = useState(false);
 
   const shareUrl = `${process.env.REACT_APP_BACKEND_URL}/api/share/imovel/${listing.id}`;
+  const imovelUrl = `/imovel/${listing.id}`;
 
   const handleShare = async () => {
     const data = {
@@ -110,6 +112,16 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
         <figcaption className="absolute bottom-3 left-3 right-3 text-xs uppercase tracking-[0.14em] text-[#221814]/80 bg-[#FAF6F0]/85 p-2 rounded backdrop-blur">
           {listing.legenda}
         </figcaption>
+
+        <Link
+          to={imovelUrl}
+          className="absolute inset-x-0 top-0 bottom-14 flex items-end justify-center pb-16 opacity-0 hover:opacity-100 transition-opacity bg-gradient-to-t from-[#221814]/40 to-transparent"
+          data-testid={`abrir-imovel-${listing.id}`}
+        >
+          <span className="px-4 py-2 rounded-full bg-[#FAF6F0]/90 backdrop-blur font-mono text-[11px] uppercase tracking-wider text-[#221814] font-semibold">
+            Ver imóvel
+          </span>
+        </Link>
       </figure>
 
       <div className="p-4 space-y-3 bg-[#FAF6F0] flex-1 flex flex-col justify-between">

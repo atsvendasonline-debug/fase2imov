@@ -143,6 +143,15 @@ async def list_listings(
     }
 
 
+@api_router.get("/listings/{listing_id}")
+async def get_listing(listing_id: str):
+    from fastapi import HTTPException
+    listing = next((l for l in LISTINGS if l["id"] == listing_id), None)
+    if listing is None:
+        raise HTTPException(status_code=404, detail="Anúncio não encontrado")
+    return listing
+
+
 @api_router.get("/facets")
 async def facets():
     return {
