@@ -13,7 +13,7 @@ from typing import List, Literal, Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, APIRouter, Query, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from starlette.middleware.cors import CORSMiddleware
 
@@ -21,6 +21,8 @@ from data import LISTINGS
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 INDEX_HTML = BASE_DIR / "frontend" / "public" / "index.html"
+INDEX_BUILT = BASE_DIR / "frontend" / "build" / "index.html"
+BOT_UA_MARKERS = ("whatsapp", "facebookexternalhit", "twitterbot", "linkedinbot", "slackbot", "telegrambot", "googlebot", "bingbot", "applebot", "discordbot", "pinterest")
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -200,23 +202,40 @@ def _fmt_preco(listing: dict) -> str:
     return v
 
 
+def _is_bot(user_agent: str) -> bool:
+    ua = (user_agent or "").lower()
+    return any(marker in ua for marker in BOT_UA_MARKERS)
+
+
 @api_router.get("/share/imovel/{listing_id}", response_class=HTMLResponse)
 async def share_imovel(listing_id: str, request: Request):
-    """Serve o index.html do app com metadados Open Graph/Twitter do imóvel,
-    para que robôs de compartilhamento (WhatsApp, Facebook, X) leiam a prévia
-    direto do HTML, sem executar JavaScript."""
+    """Para robôs de compartilhamento (WhatsApp, Facebook, X), serve HTML com
+    Open Graph/Twitter no documento inicial, sem depender de JavaScript.
+    Para pessoas abrindo o link no navegador, redireciona para a página real
+    do imóvel (SPA), evitando uma tela em branco."""
     base = str(request.base_url).rstrip("/")
-    listing = next((l for l in LISTINGS if l["id"] == listing_id), None)
-    html = INDEX_HTML.read_text(encoding="utf-8")
+    frontend_url = os.environ.get("REACT_APP_FRONTEND_URL", base).rstrip("/")
+    user_agent = request.headers.get("user-agent", "")
 
-    if listing is not None:
-        foto = listing["fotos"][0].replace("w=960&h=1200", "w=1200&h=630") if listing["fotos"] else ""
-        preco = _fmt_preco(listing)
-        finalidade = {"aluguel": "Aluguel", "venda": "Venda", "temporada": "Temporada"}.get(listing["finalidade"], listing["finalidade"])
-        titulo = f"{listing['tipo']} em {listing['bairro']}, {listing['cidade']} — {preco} | ImovLocal"
-        descricao = f"{finalidade}: {listing['legenda']} — {listing['bairro']}, {listing['cidade']}. Veja fotos e fale com o anunciante no ImovLocal (demonstração)."
-        url = f"{base}/imovel/{listing['id']}"
-        og = f"""<meta property="og:type" content="website" />
+    listing = next((l for l in LISTINGS if l["id"] == listing_id), None)
+
+    if listing is None:
+        # mesmo assim redireciona para a SPA, que mostra "Anúncio não encontrado"
+        return RedirectResponse(url=f"{frontend_url}/imovel/{listing_id}", status_code=302)
+
+    foto = listing["fotos"][0].replace("w=960&h=1200", "w=1200&h=630") if listing["fotos"] else ""
+    preco = _fmt_preco(listing)
+    finalidade = {"aluguel": "Aluguel", "venda": "Venda", "temporada": "Temporada"}.get(listing["finalidade"], listing["finalidade"])
+    titulo = f"{listing['tipo']} em {listing['bairro']}, {listing['cidade']} — {preco} | ImovLocal"
+    descricao = f"{finalidade}: {listing['legenda']} — {listing['bairro']}, {listing['cidade']}. Veja fotos e fale com o anunciante no ImovLocal (demonstração)."
+    url = f"{frontend_url}/imovel/{listing['id']}"
+
+    if not _is_bot(user_agent):
+        return RedirectResponse(url=url, status_code=302)
+
+    html_path = INDEX_BUILT if INDEX_BUILT.exists() else INDEX_HTML
+    html = html_path.read_text(encoding="utf-8")
+    og = f"""<meta property="og:type" content="website" />
         <meta property="og:site_name" content="ImovLocal" />
         <meta property="og:title" content="{titulo}" />
         <meta property="og:description" content="{descricao}" />
@@ -232,7 +251,7 @@ async def share_imovel(listing_id: str, request: Request):
         <meta name="twitter:image" content="{foto}" />
         <title>{titulo}</title>
         """
-        html = html.replace("</head>", f"{og}</head>", 1)
+    html = html.replace("</head>", f"{og}</head>", 1)
 
     return HTMLResponse(content=html)
 
