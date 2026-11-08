@@ -1,0 +1,67 @@
+/* ImovLocal — animações da direção aprovada */
+
+@keyframes imv-up {
+    from {
+        transform: translateY(110%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes imv-mq {
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+.imv-ln {
+    display: block;
+    overflow: hidden;
+}
+.imv-ln > span {
+    display: block;
+    animation: imv-up 0.9s cubic-bezier(0.2, 0.7, 0, 1) both;
+}
+.imv-ln:nth-child(2) > span {
+    animation-delay: 0.12s;
+}
+.imv-ln:nth-child(3) > span {
+    animation-delay: 0.24s;
+}
+
+.imv-fade {
+    animation: imv-up 0.9s 0.6s cubic-bezier(0.2, 0.7, 0, 1) both;
+}
+
+.imv-mq {
+    display: flex;
+    width: max-content;
+    animation: imv-mq 35s linear infinite;
+}
+
+@keyframes like-pop {
+    0% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.35);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+.like-pop {
+    animation: like-pop 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .imv-ln > span,
+    .imv-fade,
+    .imv-mq,
+    .like-pop {
+        animation: none !important;
+    }
+}

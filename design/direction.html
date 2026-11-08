@@ -1,0 +1,404 @@
+<div class="dir-1 bg-[#FAF6F0] text-[#221814] min-h-screen font-sans selection:bg-[#E25C48]/20 selection:text-[#B83D2B]">
+  <style>
+    .dir-1 {
+      --font-display: Impact, Haettenschweiler, "Arial Narrow Bold", "Franklin Gothic Bold", sans-serif;
+      --font-body: "Avenir Next", "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-family: var(--font-body);
+    }
+    .dir-1 .font-display { font-family: var(--font-display); }
+    .dir-1 .font-mono { font-family: var(--font-mono); }
+    
+    .dir-1 .ln { display: block; overflow: hidden; }
+    .dir-1 .ln > span {
+      display: block;
+      animation: d1-up 0.9s cubic-bezier(0.2, 0.7, 0, 1) both;
+    }
+    .dir-1 .ln:nth-child(2) > span { animation-delay: 0.12s; }
+    .dir-1 .ln:nth-child(3) > span { animation-delay: 0.24s; }
+    
+    .dir-1 .d1-fade {
+      animation: d1-up 0.9s 0.6s cubic-bezier(0.2, 0.7, 0, 1) both;
+    }
+    
+    .dir-1 .d1-wipe {
+      animation: d1-wipe 1.2s 0.2s cubic-bezier(0.7, 0, 0.2, 1) both;
+    }
+
+    .dir-1 .d1-mq {
+      display: flex;
+      width: max-content;
+      animation: d1-mq-anim 35s linear infinite;
+    }
+
+    .dir-1 .d1-drift {
+      animation: d1-drift-anim 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes d1-up {
+      from { transform: translateY(110%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes d1-wipe {
+      from { clip-path: inset(100% 0 0 0); }
+      to { clip-path: inset(0); }
+    }
+    @keyframes d1-mq-anim {
+      to { transform: translateX(-50%); }
+    }
+    @keyframes d1-drift-anim {
+      from { transform: rotate(0deg) scale(1); }
+      to { transform: rotate(8deg) scale(1.06); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .dir-1 * { animation: none !important; }
+    }
+  </style>
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-50 bg-[#FAF6F0]/90 backdrop-blur-md border-b border-[#221814]/10">
+    <nav class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      <a href="#hero" class="flex items-center gap-3 group">
+        <svg class="w-8 h-8 text-[#E25C48] transition-transform group-hover:scale-110" viewBox="0 0 32 32" fill="none">
+          <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="2"/>
+          <path d="M10 22V13L16 8L22 13V22H10Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="16" cy="16" r="2.5" fill="#E25C48"/>
+        </svg>
+        <span class="font-display tracking-tight text-2xl uppercase text-[#221814]" data-content-slot="brand_name" data-slot-source="brief">ImovLocal</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/70">
+        <a href="#feed" class="hover:text-[#E25C48] transition-colors">Feed 4:5</a>
+        <a href="#cidades" class="hover:text-[#E25C48] transition-colors">Cidades</a>
+        <a href="#anunciar" class="hover:text-[#E25C48] transition-colors">Anunciar</a>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="#feed" class="px-5 py-2.5 rounded-full bg-[#E25C48] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-semibold hover:bg-[#B83D2B] transition-colors shadow-sm">
+          Explorar Feed
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- HERO (TYPE-ONLY POSTER WITH LEFT RAIL) -->
+  <section id="hero" class="relative bg-[#FAF6F0] text-[#221814] pt-16 pb-24 md:py-28 border-b border-[#221814]/10 overflow-hidden">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+      
+      <!-- Left Rail Context -->
+      <div class="lg:col-span-4 flex flex-col justify-between space-y-8">
+        <div class="space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#E25C48]/10 text-[#E25C48] font-mono text-xs tracking-[0.14em] uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#E25C48] animate-ping"></span>
+            Feed Imobiliário Brasileiro
+          </div>
+          <p class="text-sm text-[#221814]/70 font-mono tracking-wider uppercase">Sem burocracia ou taxas ocultas</p>
+        </div>
+
+        <div class="p-6 rounded-2xl bg-[#F0E8DC] border border-[#221814]/10 space-y-4">
+          <span class="font-mono text-xs uppercase tracking-[0.14em] text-[#E25C48]">Busca Direta</span>
+          <p class="text-sm leading-relaxed text-[#221814]/80">
+            Conecte-se com proprietários e corretores de forma ágil via WhatsApp.
+          </p>
+          <a href="#anunciar" class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-[0.14em] font-bold text-[#E25C48] hover:text-[#B83D2B]">
+            Publicar Imóvel grátis &rarr;
+          </a>
+        </div>
+      </div>
+
+      <!-- Main Poster Typography -->
+      <div class="lg:col-span-8 space-y-6">
+        <h1 class="font-display uppercase tracking-[-0.03em] leading-[0.92] text-[#221814]" style="font-size: clamp(40px, 5.5vw, 88px);" data-content-slot="differentiator" data-slot-source="answer">
+          <span class="ln"><span>Encontre imóveis</span></span>
+          <span class="ln"><span class="text-[#E25C48]">perto de você</span></span>
+        </h1>
+
+        <p class="d1-fade text-lg md:text-xl text-[#221814]/75 max-w-xl leading-snug">
+          O feed vertical e social para alugar e comprar sem complicação no Brasil.
+        </p>
+
+        <div class="d1-fade flex flex-wrap gap-4 pt-2">
+          <a href="#feed" class="px-7 py-3.5 rounded-full bg-[#221814] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-semibold hover:bg-[#E25C48] transition-colors">
+            Ver Feed Agora
+          </a>
+          <a href="#filtros" class="px-7 py-3.5 rounded-full border border-[#221814]/20 text-[#221814] font-mono text-xs uppercase tracking-[0.14em] hover:border-[#221814] transition-colors">
+            Filtrar Cidades
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MARQUEE CIDADES BRASILEIRAS -->
+  <section class="bg-[#221814] text-[#FAF6F0] py-4 overflow-hidden border-y border-[#FAF6F0]/10">
+    <div class="d1-mq font-mono text-xs uppercase tracking-[0.2em] font-semibold">
+      <span class="px-6 flex items-center gap-6">
+        <span>São Paulo</span> &bull; <span>Rio de Janeiro</span> &bull; <span>Curitiba</span> &bull; <span>Belo Horizonte</span> &bull; <span>Florianópolis</span> &bull; <span>Salvador</span> &bull; <span>Recife</span> &bull; <span>Porto Alegre</span> &bull;
+      </span>
+      <span class="px-6 flex items-center gap-6">
+        <span>São Paulo</span> &bull; <span>Rio de Janeiro</span> &bull; <span>Curitiba</span> &bull; <span>Belo Horizonte</span> &bull; <span>Florianópolis</span> &bull; <span>Salvador</span> &bull; <span>Recife</span> &bull; <span>Porto Alegre</span> &bull;
+      </span>
+    </div>
+  </section>
+
+  <!-- FILTROS RÁPIDOS -->
+  <section id="filtros" class="bg-[#FAF6F0] text-[#221814] py-12 border-b border-[#221814]/10">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="p-6 rounded-2xl bg-[#FAF6F0] border-2 border-[#221814] shadow-[4px_4px_0px_0px_#221814] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-center">
+        <div>
+          <label class="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#221814]/60 mb-1">Finalidade</label>
+          <div class="flex gap-2">
+            <button type="button" class="px-3 py-1.5 rounded-lg bg-[#E25C48] text-white font-mono text-xs uppercase tracking-wider font-semibold">Alugar</button>
+            <button type="button" class="px-3 py-1.5 rounded-lg bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs uppercase tracking-wider hover:border-[#221814]">Comprar</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#221814]/60 mb-1">Localização</label>
+          <div class="p-2 rounded-lg bg-[#FAF6F0] border border-[#221814]/30 font-mono text-xs text-[#221814]">
+            Bairros e Cidades do Brasil
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-mono text-[11px] uppercase tracking-[0.14em] text-[#221814]/60 mb-1">Tipo de Imóvel</label>
+          <div class="p-2 rounded-lg bg-[#FAF6F0] border border-[#221814]/30 font-mono text-xs text-[#221814]">
+            Apartamento, Studio, Casa
+          </div>
+        </div>
+
+        <div class="pt-2 sm:pt-0">
+          <a href="#feed" class="w-full text-center block px-4 py-2.5 rounded-lg bg-[#221814] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-semibold hover:bg-[#E25C48] transition-colors">
+            Atualizar Feed
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEED VERTICAL 4:5 SHOWCASE -->
+  <section id="feed" class="bg-[#FAF6F0] text-[#221814] py-24 md:py-32 border-b border-[#221814]/10">
+    <div class="max-w-6xl mx-auto px-6 space-y-12">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#221814]/10 pb-6">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-[0.14em] text-[#E25C48]">Experiência Social</span>
+          <h2 class="font-display uppercase text-3xl md:text-5xl tracking-tight text-[#221814] mt-1" style="font-size: clamp(32px, 4vw, 56px);">
+            Feed Vertical de Imóveis
+          </h2>
+        </div>
+        <p class="text-sm font-mono text-[#221814]/60 uppercase tracking-wider">Formato 4:5 com fotos, preço e contato</p>
+      </div>
+
+      <!-- Feed Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Card 1 -->
+        <article class="bg-[#FAF6F0] rounded-2xl border border-[#221814]/15 overflow-hidden shadow-sm flex flex-col justify-between">
+          <div class="p-4 flex items-center justify-between border-b border-[#221814]/10 bg-[#F0E8DC]/50">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-[#E25C48]/20 flex items-center justify-center font-mono text-xs font-bold text-[#E25C48]">CP</div>
+              <div>
+                <h3 class="font-bold text-xs">Camila Prado</h3>
+                <p class="font-mono text-[10px] text-[#221814]/60">Pinheiros, São Paulo</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-[#221814] text-[#FAF6F0] font-mono text-[10px] uppercase tracking-wider">Aluguel</span>
+          </div>
+
+          <figure class="relative aspect-[4/5] bg-[#E9E0D2] flex flex-col justify-between p-4" data-image-slot="feed-1: vertical 4:5 photo of modern sunlit apartment in São Paulo">
+            <div class="flex justify-between items-start">
+              <span class="px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">1/4</span>
+              <span class="px-2.5 py-1 rounded-md bg-[#E25C48] text-white font-mono text-xs font-bold">R$ 3.800 /mês</span>
+            </div>
+            <figcaption class="text-xs uppercase tracking-[0.14em] text-[#221814]/70 bg-[#FAF6F0]/80 p-2 rounded backdrop-blur">
+              Studio com varanda integrada e sol da manhã
+            </figcaption>
+          </figure>
+
+          <div class="p-4 space-y-3 bg-[#FAF6F0]">
+            <p class="text-xs text-[#221814]/80 leading-relaxed">
+              Reformado com marcenaria planejada, a 300m do metrô Fradique Coutinho.
+            </p>
+            <div class="pt-2 border-t border-[#221814]/10 flex items-center justify-between">
+              <span class="font-mono text-xs text-[#221814]/60">52 m² &bull; 1 quarto</span>
+              <button type="button" class="px-3.5 py-1.5 rounded-full bg-[#25D366] text-white font-mono text-xs uppercase tracking-wider font-bold hover:opacity-90">
+                WhatsApp
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="bg-[#FAF6F0] rounded-2xl border border-[#221814]/15 overflow-hidden shadow-sm flex flex-col justify-between">
+          <div class="p-4 flex items-center justify-between border-b border-[#221814]/10 bg-[#F0E8DC]/50">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-[#221814]/10 flex items-center justify-center font-mono text-xs font-bold text-[#221814]">RM</div>
+              <div>
+                <h3 class="font-bold text-xs">Rodrigo Moura</h3>
+                <p class="font-mono text-[10px] text-[#221814]/60">Icaraí, Niterói</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-[#E25C48] text-white font-mono text-[10px] uppercase tracking-wider">Venda</span>
+          </div>
+
+          <figure class="relative aspect-[4/5] bg-[#E9E0D2] flex flex-col justify-between p-4" data-image-slot="feed-2: vertical 4:5 photo of coastal apartment living room in Rio">
+            <div class="flex justify-between items-start">
+              <span class="px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">1/6</span>
+              <span class="px-2.5 py-1 rounded-md bg-[#221814] text-white font-mono text-xs font-bold">R$ 720.000</span>
+            </div>
+            <figcaption class="text-xs uppercase tracking-[0.14em] text-[#221814]/70 bg-[#FAF6F0]/80 p-2 rounded backdrop-blur">
+              Vista lateral mar e vaga de garagem
+            </figcaption>
+          </figure>
+
+          <div class="p-4 space-y-3 bg-[#FAF6F0]">
+            <p class="text-xs text-[#221814]/80 leading-relaxed">
+              2 quartos, suíte ampla e prédio com portaria 24h a uma quadra da praia.
+            </p>
+            <div class="pt-2 border-t border-[#221814]/10 flex items-center justify-between">
+              <span class="font-mono text-xs text-[#221814]/60">78 m² &bull; 2 quartos</span>
+              <button type="button" class="px-3.5 py-1.5 rounded-full bg-[#25D366] text-white font-mono text-xs uppercase tracking-wider font-bold hover:opacity-90">
+                WhatsApp
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="bg-[#FAF6F0] rounded-2xl border border-[#221814]/15 overflow-hidden shadow-sm flex flex-col justify-between">
+          <div class="p-4 flex items-center justify-between border-b border-[#221814]/10 bg-[#F0E8DC]/50">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-[#E25C48]/20 flex items-center justify-center font-mono text-xs font-bold text-[#E25C48]">LS</div>
+              <div>
+                <h3 class="font-bold text-xs">Larissa Silva</h3>
+                <p class="font-mono text-[10px] text-[#221814]/60">Batel, Curitiba</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-[#221814] text-[#FAF6F0] font-mono text-[10px] uppercase tracking-wider">Aluguel</span>
+          </div>
+
+          <figure class="relative aspect-[4/5] bg-[#E9E0D2] flex flex-col justify-between p-4" data-image-slot="feed-3: vertical 4:5 photo of cozy wood-detailed loft in Curitiba">
+            <div class="flex justify-between items-start">
+              <span class="px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">1/3</span>
+              <span class="px-2.5 py-1 rounded-md bg-[#E25C48] text-white font-mono text-xs font-bold">R$ 2.950 /mês</span>
+            </div>
+            <figcaption class="text-xs uppercase tracking-[0.14em] text-[#221814]/70 bg-[#FAF6F0]/80 p-2 rounded backdrop-blur">
+              Loft duplex mobiliado com piso aquecido
+            </figcaption>
+          </figure>
+
+          <div class="p-4 space-y-3 bg-[#FAF6F0]">
+            <p class="text-xs text-[#221814]/80 leading-relaxed">
+              Totalmente equipado, condomínio fechado próximo a cafés e praças.
+            </p>
+            <div class="pt-2 border-t border-[#221814]/10 flex items-center justify-between">
+              <span class="font-mono text-xs text-[#221814]/60">45 m² &bull; Duplex</span>
+              <button type="button" class="px-3.5 py-1.5 rounded-full bg-[#25D366] text-white font-mono text-xs uppercase tracking-wider font-bold hover:opacity-90">
+                WhatsApp
+              </button>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULÁRIO DEMO PARA ANUNCIAR -->
+  <section id="anunciar" class="bg-[#FAF6F0] text-[#221814] py-24 md:py-32 border-b border-[#221814]/10">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="p-8 md:p-12 rounded-3xl bg-[#F0E8DC] border border-[#221814]/20 space-y-8">
+        <div>
+          <span class="font-mono text-xs uppercase tracking-[0.14em] text-[#E25C48]">Anúncio Descomplicado</span>
+          <h2 class="font-display uppercase text-3xl md:text-5xl text-[#221814] mt-1" style="font-size: clamp(32px, 4vw, 56px);">
+            Anunciar no ImovLocal
+          </h2>
+          <p class="text-sm text-[#221814]/70 mt-2">
+            Protótipo demonstrativo para simular a criação de novos imóveis no feed.
+          </p>
+        </div>
+
+        <form class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/80 mb-2">Cidade e Bairro</label>
+              <input type="text" placeholder="Ex: São Paulo, Pinheiros" class="w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]" data-content-slot="city_input" data-slot-source="placeholder">
+            </div>
+
+            <div>
+              <label class="block font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/80 mb-2">Preço (R$)</label>
+              <input type="text" placeholder="Ex: R$ 3.500 /mês ou R$ 650.000" class="w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]" data-content-slot="price_input" data-slot-source="placeholder">
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/80 mb-2">Fotos do Imóvel (Proporção 4:5)</label>
+            <div class="p-6 rounded-xl border-2 border-dashed border-[#221814]/20 text-center bg-[#FAF6F0] font-mono text-xs text-[#221814]/60">
+              Arraste fotos verticais ou selecione do seu dispositivo
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/80 mb-2">Seu Nome / Imobiliária</label>
+              <input type="text" placeholder="Ex: Gabriel Correto" class="w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]" data-content-slot="owner_name" data-slot-source="placeholder">
+            </div>
+
+            <div>
+              <label class="block font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/80 mb-2">WhatsApp para Contato</label>
+              <input type="text" placeholder="DDD + Número" class="w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]" data-content-slot="whatsapp_field" data-slot-source="placeholder">
+            </div>
+          </div>
+
+          <button type="button" class="w-full py-4 rounded-xl bg-[#E25C48] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-bold hover:bg-[#B83D2B] transition-colors shadow-md">
+            Publicar Imóvel no Feed (Simulação)
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAPA & LOCALIZAÇÃO DEMO -->
+  <section class="bg-[#FAF6F0] text-[#221814] py-20 border-b border-[#221814]/10">
+    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+      <div class="md:col-span-5 space-y-4">
+        <span class="font-mono text-xs uppercase tracking-[0.14em] text-[#E25C48]">Radar de Bairro</span>
+        <h2 class="font-display uppercase text-3xl md:text-4xl text-[#221814]" style="font-size: clamp(28px, 3.5vw, 44px);">
+          Visualização Geográfica
+        </h2>
+        <p class="text-sm text-[#221814]/70 leading-relaxed">
+          Nesta etapa de protótipo, a visualização no mapa é uma demonstração sem chaves externas para manter custo zero.
+        </p>
+      </div>
+
+      <div class="md:col-span-7">
+        <div class="aspect-[16/9] rounded-2xl bg-[#E9E0D2] border border-[#221814]/20 flex items-center justify-center p-6 text-center font-mono text-xs uppercase tracking-widest text-[#221814]/60">
+          [ Demonstração de Radar / Mapa de Bairros Próximos ]
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-[#221814] text-[#FAF6F0] py-16 border-t border-[#FAF6F0]/10">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-[#E25C48]" viewBox="0 0 32 32" fill="none">
+          <rect x="2" y="2" width="28" height="28" rx="8" fill="currentColor" fill-opacity="0.2"/>
+          <path d="M10 22V13L16 8L22 13V22H10Z" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <span class="font-display text-xl uppercase tracking-tight">ImovLocal</span>
+      </div>
+
+      <p class="font-mono text-xs text-[#FAF6F0]/60 text-center">
+        Protótipo MVP demonstrativo &bull; Português do Brasil &bull; Valores em Reais
+      </p>
+
+      <div class="font-mono text-xs uppercase tracking-[0.14em] text-[#FAF6F0]/40">
+        &copy; 2025 ImovLocal
+      </div>
+    </div>
+  </footer>
+</div>

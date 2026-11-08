@@ -1,0 +1,187 @@
+{
+  "typography": {
+    "font_display": "Impact, Haettenschweiler, 'Arial Narrow Bold', 'Franklin Gothic Bold', sans-serif",
+    "font_body": "'Avenir Next', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif",
+    "font_mono": "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+    "hierarchy": {
+      "h1": "text-[clamp(40px,5.5vw,88px)] leading-[0.92] tracking-[-0.03em] uppercase",
+      "h2": "text-[clamp(32px,4vw,56px)] tracking-tight uppercase",
+      "body": "text-base to text-xl",
+      "mono_labels": "text-xs uppercase tracking-[0.14em]"
+    }
+  },
+  "colors": {
+    "background": "#FAF6F0",
+    "text": "#221814",
+    "accent": "#E25C48",
+    "accent_hover": "#B83D2B",
+    "secondary_bg": "#F0E8DC",
+    "card_bg": "#FAF6F0",
+    "card_header": "#F0E8DC/50",
+    "image_bg": "#E9E0D2",
+    "whatsapp": "#25D366",
+    "borders": "#221814/10"
+  },
+  "visual_enhancers": {
+    "borders": "1px solid borders using black/10 or black/20 for crisp separation",
+    "shadows": "Hard brutalist shadow: shadow-[4px_4px_0px_0px_#221814] for filter card, subtle shadow-sm for feed cards",
+    "glassmorphism": "backdrop-blur-md on header, backdrop-blur on image badges"
+  },
+  "components": [
+    "Nav Header (Sticky)",
+    "Hero Section (Left Rail)",
+    "Marquee (Cities)",
+    "Filter Card",
+    "Feed Card (4:5 Ratio)",
+    "Demo Form",
+    "Map Demo"
+  ],
+  "grids": {
+    "hero": "grid-cols-1 lg:grid-cols-12 gap-12",
+    "feed": "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+    "filters": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4",
+    "form": "grid-cols-1 md:grid-cols-2 gap-6"
+  },
+  "layouts": {
+    "spacing": "max-w-6xl mx-auto px-6",
+    "section_padding": "py-24 md:py-32",
+    "card_padding": "p-4"
+  },
+  "motion": {
+    "animations": "d1-up (slide up with fade), d1-wipe (clip-path reveal), d1-mq-anim (continuous marquee), d1-drift-anim",
+    "hover": "group-hover:scale-110, hover:bg-[#B83D2B], hover:border-[#221814]"
+  },
+  "accessibility": {
+    "contrast": "Ensure #221814 text on #FAF6F0 background. Meet minimum 4.5:1 ratio.",
+    "reduced_motion": "Disable animations with media query prefers-reduced-motion"
+  },
+  "media": {
+    "images": "Feed cards use 4:5 vertical proportion (aspect-[4/5]).",
+    "icons": "Custom SVG or raw SVG paths for simplicity"
+  },
+  "image_urls": [
+    {
+      "category": "feed-1",
+      "description": "vertical 4:5 photo of modern sunlit apartment in São Paulo",
+      "url": "https://images.unsplash.com/photo-1594873604892-b599f847e859?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzB8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBhcGFydG1lbnQlMjBpbnRlcmlvcnxlbnwwfHx8fDE3OTQwNDI4Nzh8MA&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "feed-2",
+      "description": "vertical 4:5 photo of coastal apartment living room in Rio",
+      "url": "https://images.unsplash.com/photo-1779903726439-5c27e3996c8a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBsaXZpbmclMjByb29tJTIwb2NlYW4lMjB2aWV3fGVufDB8fHx8MTc5NDEwOTE4M3ww&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "feed-3",
+      "description": "vertical 4:5 photo of cozy wood-detailed loft in Curitiba",
+      "url": "https://images.unsplash.com/photo-1591825692235-69e99d4189f3?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzB8MHwxfHNlYXJjaHw0fHxjb3p5JTIwd29vZCUyMGxvZnQlMjBpbnRlcmlvcnxlbnwwfHx8fDE3OTQxMDkxNzZ8MA&ixlib=rb-4.1.0&q=85"
+    }
+  ],
+  "build_manifest": {
+    "direction": {
+      "path": "/app/design/direction.html",
+      "app_type": "real-estate social feed MVP (portal)",
+      "ambition": "A3",
+      "mode": "light",
+      "rail": "whatsapp",
+      "spine": "PORTAL",
+      "name": "ImovLocal Feed Rápido",
+      "tone": "direto e social",
+      "axes": {
+        "layout": "left-rail",
+        "hero": "type-only",
+        "tone_register": "social-moderno",
+        "proof": "honest-empty",
+        "motion": "entrance-only",
+        "colour": "marfim+vermelho-queimado",
+        "type_pairing": "condensed-display+sans-body"
+      }
+    },
+    "tone_tokens": {
+      "font_display": "Impact, Haettenschweiler, 'Arial Narrow Bold', 'Franklin Gothic Bold', sans-serif",
+      "font_body": "'Avenir Next', 'Helvetica Neue', 'Segoe UI', Arial, sans-serif",
+      "font_mono": "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+      "colors": {
+        "background": "#FAF6F0",
+        "text": "#221814",
+        "accent": "#E25C48",
+        "accent_hover": "#B83D2B",
+        "secondary_bg": "#F0E8DC",
+        "whatsapp": "#25D366"
+      },
+      "border_radius": "rounded-2xl, rounded-[4px], rounded-xl",
+      "spacing_step": "Standard Tailwind spacing, generous padding (p-4, p-6, p-8, p-12)",
+      "shadows": "shadow-[4px_4px_0px_0px_#221814] for highlighted card, shadow-sm for feed cards"
+    },
+    "conversion_wiring": {
+      "action": "whatsapp",
+      "locations": [
+        "Feed card 'WhatsApp' button -> opens external WhatsApp link"
+      ],
+      "behavior": "For the MVP, buttons can just trigger a toast or navigate to standard whatsapp API"
+    },
+    "content_slots": [
+      {
+        "slot": "brand_name",
+        "text": "ImovLocal",
+        "source": "brief"
+      },
+      {
+        "slot": "differentiator",
+        "text": "Encontre imóveis perto de você",
+        "source": "answer"
+      },
+      {
+        "slot": "city_input",
+        "text": "Ex: São Paulo, Pinheiros",
+        "source": "placeholder"
+      },
+      {
+        "slot": "price_input",
+        "text": "Ex: R$ 3.500 /mês ou R$ 650.000",
+        "source": "placeholder"
+      },
+      {
+        "slot": "owner_name",
+        "text": "Ex: Gabriel Correto",
+        "source": "placeholder"
+      },
+      {
+        "slot": "whatsapp_field",
+        "text": "DDD + Número",
+        "source": "placeholder"
+      }
+    ],
+    "fabrication_guardrails": [
+      "No statistics",
+      "No ratings",
+      "No review counts",
+      "No awards",
+      "No certifications",
+      "No founding or copyright years except what is provided in footer",
+      "No press mentions",
+      "No named clients",
+      "No testimonials"
+    ],
+    "locale": {
+      "language": "pt-BR",
+      "currency": "BRL",
+      "formatting": "R$ X.XXX,00"
+    }
+  },
+  "instructions_to_main_agent": "/app/design/direction.html is the visual source of truth. These guidelines transcribe it and add real images. On any conflict, the direction file wins. Ensure that the main agent implements it using tailwind css exactly as laid out in the direction file.",
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy",
+    "Use glass-morphism effects with backdrop filters (12-24px blur)",
+    "You MUST NOT apply universal transition. Eg: transition: all.",
+    "You MUST NOT center align the app container, ie do not add .App { text-align: center; } in the css file.",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "All interactive and key informational elements MUST include a data-testid attribute to facilitate robust automated testing.",
+    "Use sonner for toasts"
+  ]
+}
