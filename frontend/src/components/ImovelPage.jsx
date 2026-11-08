@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import useEmblaCarousel from "embla-carousel-react";
-import { ArrowLeft, ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin, BedDouble, Bath, Car, Ruler, ImagePlus } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin, BedDouble, Bath, Car, Ruler } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Seo } from "./Seo";
+import { ListingPhoto } from "./ListingPhoto";
 import { formatPreco, buildWaLink, initials } from "../lib/format";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -21,6 +22,7 @@ export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
   const [index, setIndex] = useState(0);
   const [copied, setCopied] = useState(false);
+  const fotos = Array.isArray(listing?.fotos) ? listing.fotos.filter(Boolean) : [];
 
   useEffect(() => {
     setLoading(true);
@@ -59,7 +61,7 @@ export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
     };
     if (isDemo) {
       toast.info("Anúncio de demonstração", {
-        description: "Este link abre a página do anúncio neste navegador. A foto aparece aqui, mas não na prévia do WhatsApp (precisa de armazenamento público, que será ativado na fase 2).",
+        description: "Este anúncio e suas fotos ficam apenas nesta aba. O link não abre para outras pessoas ou aparelhos e a foto não aparece na prévia do WhatsApp.",
       });
     }
     if (navigator.share) {
@@ -143,37 +145,32 @@ export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <figure className="lg:col-span-3 relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#E9E0D2] border border-[#221814]/15" data-testid="imovel-fotos">
-            {listing.fotos.length > 0 ? (
+            {fotos.length > 0 ? (
               <>
                 <div className="overflow-hidden h-full" ref={emblaRef}>
                   <div className="flex h-full">
-                    {listing.fotos.map((src, i) => (
-                      <div key={src} className="flex-[0_0_100%] min-w-0 h-full">
-                        <img src={src} alt={`${listing.tipo} em ${listing.bairro}, ${listing.cidade} — foto ${i + 1}`} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
+                    {fotos.map((src, i) => (
+                      <div key={`${listing.id}-foto-${i}`} className="flex-[0_0_100%] min-w-0 h-full">
+                        <ListingPhoto src={src} alt={`${listing.tipo} em ${listing.bairro}, ${listing.cidade} — foto ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} />
                       </div>
                     ))}
                   </div>
                 </div>
-                {listing.fotos.length > 1 && (
+                {fotos.length > 1 && (
                   <>
-                    <button type="button" aria-label="Foto anterior" onClick={() => { emblaApi?.scrollPrev(); setIndex((i) => (i - 1 + listing.fotos.length) % listing.fotos.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-prev-foto">
+                    <button type="button" aria-label="Foto anterior" onClick={() => { emblaApi?.scrollPrev(); setIndex((i) => (i - 1 + fotos.length) % fotos.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-prev-foto">
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <button type="button" aria-label="Próxima foto" onClick={() => { emblaApi?.scrollNext(); setIndex((i) => (i + 1) % listing.fotos.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-next-foto">
+                    <button type="button" aria-label="Próxima foto" onClick={() => { emblaApi?.scrollNext(); setIndex((i) => (i + 1) % fotos.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-next-foto">
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </>
                 )}
                 <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">
-                  {index + 1}/{listing.fotos.length}
+                  {Math.min(index, fotos.length - 1) + 1}/{fotos.length}
                 </span>
               </>
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#221814]/40">
-                <ImagePlus className="w-10 h-10" />
-                <span className="font-mono text-[10px] uppercase tracking-wider">Sem foto (demonstração)</span>
-              </div>
-            )}
+            ) : <ListingPhoto />}
           </figure>
 
           <div className="lg:col-span-2 space-y-6">

@@ -12,15 +12,27 @@ export const MeusAnunciosPage = ({ demoListings, onSalvar, onRemover, likedIds, 
   const [editando, setEditando] = useState(null); // null | "novo" | id
 
   const handleCriar = async (dados) => {
-    onSalvar(dados, null);
-    toast.success("Anúncio de demonstração criado", { description: "Fica visível até você recarregar a página." });
+    const resultado = onSalvar(dados, null);
+    toast.success("Anúncio de demonstração criado", { description: "Fica guardado nesta aba, inclusive após atualizar a página." });
+    if (resultado?.droppedPhotos > 0) {
+      toast.warning(`${resultado.droppedPhotos} foto(s) não couberam no armazenamento desta aba`, {
+        description: "O anúncio foi salvo sem essas fotos. Nenhuma imagem de exemplo foi usada.",
+      });
+    }
     setEditando(null);
+    return resultado;
   };
 
   const handleEditar = async (dados) => {
-    onSalvar(dados, editando);
+    const resultado = onSalvar(dados, editando);
     toast.success("Anúncio atualizado (simulação)");
+    if (resultado?.droppedPhotos > 0) {
+      toast.warning(`${resultado.droppedPhotos} foto(s) não couberam no armazenamento desta aba`, {
+        description: "As fotos que couberam foram mantidas; nenhuma imagem de exemplo foi usada.",
+      });
+    }
     setEditando(null);
+    return resultado;
   };
 
   const handleRemover = (id) => {
@@ -56,7 +68,7 @@ export const MeusAnunciosPage = ({ demoListings, onSalvar, onRemover, likedIds, 
         </div>
 
         <p className="text-sm text-[#221814]/70">
-          Aqui você cria, edita e remove anúncios <strong>apenas nesta sessão</strong>. Nada é salvo em conta ou banco de dados — ao recarregar a página, a lista volta ao vazio. Na fase 2, com login, estes anúncios ficarão guardados na sua conta.
+          Aqui você cria, edita e remove anúncios <strong>temporariamente nesta aba</strong>. Eles e as fotos reduzidas continuam após atualizar a página, mas são apagados quando você fecha a aba. Não há conta nem banco de dados, e os anúncios não aparecem em outros aparelhos. Fotos locais não aparecem na prévia do WhatsApp.
         </p>
 
         {editando === "novo" && (
@@ -69,7 +81,7 @@ export const MeusAnunciosPage = ({ demoListings, onSalvar, onRemover, likedIds, 
         {demoListings.length === 0 && editando !== "novo" ? (
           <div className="flex flex-col items-center gap-4 py-16 text-center" data-testid="meus-anuncios-vazio">
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/60">
-              Você ainda não criou nenhum anúncio nesta sessão.
+              Você ainda não criou nenhum anúncio nesta aba.
             </p>
             <button
               type="button"

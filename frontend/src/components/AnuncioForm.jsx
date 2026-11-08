@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { ImagePlus } from "lucide-react";
+import { compressImageFile } from "../lib/imageCompression";
 
 const inputClass =
   "w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]";
@@ -15,18 +16,42 @@ const VAZIO = {
 
 export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publicar imóvel no feed (simulação)" }) => {
   const [form, setForm] = useState(inicial || VAZIO);
-  const [fotos, setFotos] = useState([]);
+  const [fotos, setFotos] = useState(() => (inicial?.fotos || []).slice(0, 5).map((url, index) => ({ nome: `Foto ${index + 1}`, url })));
   const [enviando, setEnviando] = useState(false);
+  const [processandoFotos, setProcessandoFotos] = useState(false);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
   const setNum = (k) => (e) => setForm((f) => ({ ...f, [k]: Number(String(e.target.value).replace(/[^\d]/g, "")) || 0 }));
 
-  const handleFotos = (e) => {
-    const files = Array.from(e.target.files || []).slice(0, 5);
-    // Pré-visualização local (blob:) apenas para mostrar as fotos escolhidas.
-    // Na demonstração, o anúncio salvo usa as fotos públicas de exemplo,
-    // porque blob: não é uma URL pública e some ao navegar/recarregar.
-    setFotos(files.map((f) => ({ nome: f.name, url: URL.createObjectURL(f) })));
+  const handleFotos = async (e) => {
+    const input = e.currentTarget;
+    const selectedFiles = Array.from(input.files || []);
+    if (selectedFiles.length === 0) return;
+    if (selectedFiles.length > 5) {
+      toast.warning("O máximo é 5 fotos por anúncio", { description: "Serão preparadas as primeiras 5 fotos selecionadas." });
+    }
+
+    setProcessandoFotos(true);
+    try {
+      const results = await Promise.all(selectedFiles.slice(0, 5).map(async (file) => {
+        try {
+          return { nome: file.name, url: await compressImageFile(file) };
+        } catch (error) {
+          return { nome: file.name, error };
+        }
+      }));
+      const ready = results.filter((result) => result.url);
+      const failedCount = results.length - ready.length;
+      if (ready.length > 0) setFotos(ready);
+      if (failedCount > 0) {
+        toast.warning(`${failedCount} foto(s) não puderam ser preparadas`, {
+          description: ready.length > 0 ? "As demais fotos escolhidas foram mantidas." : "As fotos anteriores do anúncio foram mantidas.",
+        });
+      }
+    } finally {
+      setProcessandoFotos(false);
+      input.value = "";
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -38,10 +63,8 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
     }
     setEnviando(true);
     try {
-      // Demonstração: usa as fotos enviadas (blob: URLs) durante a sessão.
-      // Se não houver fotos, o anúncio fica sem imagem (estado vazio).
       const fotosFinal = fotos.length > 0 ? fotos.map((f) => f.url) : (inicial?.fotos || []);
-      await onSalvar({
+      const resultado = await onSalvar({
         ...form,
         preco,
         quartos: Number(form.quartos) || 0,
@@ -50,10 +73,15 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
         area_m2: Number(form.area_m2) || 0,
         fotos: fotosFinal,
       });
+      if (resultado === false) return;
       if (!inicial) {
         setForm(VAZIO);
         setFotos([]);
       }
+    } catch (error) {
+      toast.error("Não foi possível salvar o anúncio", {
+        description: error?.message || "Confira o espaço temporário disponível no navegador e tente novamente.",
+      });
     } finally {
       setEnviando(false);
     }
@@ -121,17 +149,18 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
         <label htmlFor="f-fotos" className="block p-6 rounded-xl border-2 border-dashed border-[#221814]/20 text-center bg-[#FAF6F0] cursor-pointer hover:border-[#E25C48] transition-colors" data-testid="anunciar-fotos-dropzone">
           <ImagePlus className="w-6 h-6 mx-auto mb-2 text-[#221814]/40" />
           <span className="font-mono text-xs text-[#221814]/60">
-            {fotos.length > 0 ? `${fotos.length} foto(s) selecionada(s) — visível nesta sessão, mas não na prévia do WhatsApp` : "Selecione fotos do seu dispositivo (visível nesta sessão, mas não na prévia do WhatsApp)"}
+            {processandoFotos ? "Preparando e reduzindo as fotos..." : fotos.length > 0 ? `${fotos.length} foto(s) pronta(s) — após salvar, ficam nesta aba; não aparecem na prévia do WhatsApp` : "Selecione até 5 fotos. Após salvar, ficam nesta aba e não aparecem na prévia do WhatsApp."}
           </span>
         </label>
         <input id="f-fotos" type="file" accept="image/*" multiple className="hidden" onChange={handleFotos} data-testid="anunciar-fotos-input" />
         {fotos.length > 0 && (
-          <div className="flex gap-2 mt-3">
-            {fotos.map((f) => (
-              <img key={f.nome} src={f.url} alt={f.nome} className="w-16 h-20 object-cover rounded-lg border border-[#221814]/20" />
+          <div className="flex gap-2 mt-3 overflow-x-auto">
+            {fotos.map((f, index) => (
+              <img key={`${f.nome}-${index}`} src={f.url} alt={f.nome} className="w-16 h-20 object-cover rounded-lg border border-[#221814]/20 shrink-0" />
             ))}
           </div>
         )}
+        <p className="mt-2 text-[11px] text-[#221814]/55">Após salvar, as imagens são reduzidas e guardadas temporariamente nesta aba. Fechar a aba apaga os anúncios e as fotos.</p>
       </div>
 
       <div>
@@ -163,11 +192,11 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
         )}
         <button
           type="submit"
-          disabled={enviando}
+          disabled={enviando || processandoFotos}
           className="flex-1 py-4 rounded-xl bg-[#E25C48] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-bold hover:bg-[#B83D2B] transition-colors shadow-md disabled:opacity-60"
           data-testid="anunciar-submit-button"
         >
-          {enviando ? "Salvando..." : rotuloBotao}
+          {processandoFotos ? "Preparando fotos..." : enviando ? "Salvando..." : rotuloBotao}
         </button>
       </div>
     </form>

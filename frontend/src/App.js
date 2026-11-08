@@ -18,25 +18,9 @@ import { PerfilPage } from "@/components/PerfilPage";
 import { MapaDemo } from "@/components/MapaDemo";
 import { Footer } from "@/components/Footer";
 import { FILTROS_VAZIOS, MATCH_POR_ROTULO } from "@/lib/filterOptions";
+import { loadDemoListings, saveDemoListings } from "@/lib/demoStorage";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-
-// Persistência de sessão para os anúncios demo (Meus anúncios): mantém
-// durante a navegação e ao voltar ao feed, mas some ao recarregar a página.
-const carregarDemo = () => {
-  try {
-    const raw = sessionStorage.getItem("imovlocal_demo");
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-};
-
-const salvarDemo = (lista) => {
-  try {
-    sessionStorage.setItem("imovlocal_demo", JSON.stringify(lista));
-  } catch {}
-};
 
 const fmtMoeda = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
@@ -200,15 +184,7 @@ const Home = ({ seo, likedIds, onToggleLike, demoListings, onDemoCriado }) => {
 
 function App() {
   const [likedIds, setLikedIds] = useState(new Set());
-  const [demoListings, setDemoListingsState] = useState(carregarDemo);
-
-  const setDemoListings = (fn) => {
-    setDemoListingsState((prev) => {
-      const next = typeof fn === "function" ? fn(prev) : fn;
-      salvarDemo(next);
-      return next;
-    });
-  };
+  const [demoListings, setDemoListingsState] = useState(loadDemoListings);
 
   const handleToggleLike = (id) => {
     setLikedIds((prev) => {
@@ -220,22 +196,34 @@ function App() {
   };
 
   const handleDemoSalvar = (dados, idEdicao) => {
+    const id = idEdicao || `demo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const novoAnuncio = {
+      id,
+      estado: dados.estado || "",
+      detalhes: "",
+      curtidas: 0,
+      whatsapp: dados.whatsapp || "",
+      ...dados,
+      id,
+    };
     if (idEdicao) {
-      setDemoListings((prev) => prev.map((l) => (l.id === idEdicao ? { ...l, ...dados } : l)));
-    } else {
-      setDemoListings((prev) => [{
-        id: `demo-${Date.now()}`,
-        estado: dados.estado || "",
-        detalhes: "",
-        curtidas: 0,
-        whatsapp: dados.whatsapp || "",
-        ...dados,
-      }, ...prev]);
+      if (!demoListings.some((listing) => listing.id === idEdicao)) {
+        throw new Error("Este anúncio não está mais disponível nesta aba. Volte para a lista e tente novamente.");
+      }
     }
+    const next = idEdicao
+      ? demoListings.map((listing) => (listing.id === idEdicao ? { ...listing, ...dados, id: idEdicao } : listing))
+      : [novoAnuncio, ...demoListings];
+    const saved = saveDemoListings(next, window.sessionStorage, id);
+    setDemoListingsState(saved.listings);
+    return saved;
   };
 
   const handleDemoRemover = (id) => {
-    setDemoListings((prev) => prev.filter((l) => l.id !== id));
+    const next = demoListings.filter((listing) => listing.id !== id);
+    const saved = saveDemoListings(next, window.sessionStorage);
+    setDemoListingsState(saved.listings);
+    return saved;
   };
 
   return (

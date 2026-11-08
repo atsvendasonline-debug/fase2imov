@@ -3,14 +3,20 @@ import { AnuncioForm } from "./AnuncioForm";
 
 export const AnunciarSection = ({ onPublicado }) => {
   const handleSalvar = async (dados) => {
-    onPublicado({
+    const resultado = onPublicado({
       ...dados,
       legenda: dados.legenda || "Anúncio criado na demonstração",
     });
     toast.success("Anúncio de demonstração publicado no feed", {
-      description: "Ele aparece agora na tela e em 'Meus anúncios', mas não é salvo: some ao recarregar a página.",
+      description: "Ele e suas fotos ficam nesta aba, mesmo após atualizar. Fechar a aba apaga; o WhatsApp não mostra a foto na prévia.",
     });
+    if (resultado?.droppedPhotos > 0) {
+      toast.warning(`${resultado.droppedPhotos} foto(s) não couberam no armazenamento desta aba`, {
+        description: "O anúncio foi salvo sem essas fotos. Nenhuma imagem de exemplo foi usada.",
+      });
+    }
     document.getElementById("feed")?.scrollIntoView({ behavior: "smooth" });
+    return resultado;
   };
 
   return (
@@ -23,7 +29,7 @@ export const AnunciarSection = ({ onPublicado }) => {
               Anunciar no ImovLocal
             </h2>
             <p className="text-sm text-[#221814]/70 mt-2">
-              Formulário demonstrativo: o anúncio aparece no feed e em "Meus anúncios" na hora, mas <strong>não fica salvo</strong> — some ao recarregar a página e não aparece para outras pessoas ou em outros aparelhos.
+              Formulário demonstrativo: o anúncio e as fotos reduzidas ficam guardados apenas nesta aba, inclusive após atualizar. Fechar a aba apaga tudo; nada aparece em outros aparelhos e a foto não entra na prévia do WhatsApp.
             </p>
           </div>
           <AnuncioForm onSalvar={handleSalvar} />
