@@ -22,6 +22,8 @@ MVP responsivo de um portal brasileiro de imóveis com experiência social (feed
 ## O que está implementado
 - 2026-02 (1ª entrega): feed vertical 4:5 com carrossel (embla), anunciante/cidade/bairro/preço/tipo/legenda, curtir com contador, compartilhar (Web Share API + copiar link), botão WhatsApp (demonstração: aviso em toast, sem números inventados), busca por cidade/bairro, filtros (compra/aluguel, tipo, faixa de preço), banner de mudança de região, mensagem de fim de resultados, "Ver no mapa" só visual, formulário "Anunciar imóvel" demonstrativo (aparece no feed, some ao recarregar), identidade visual aprovada, responsivo (testado 1920/390px), 15 imóveis fictícios em 10 cidades.
 
+- 2026-02 (ajuste mobile): tela inicial mobile encurtada — trilha lateral e parágrafo do hero ocultos no celular, título menor, paddings reduzidos (hero, marquee, filtros, feed), busca e primeiro anúncio bem mais próximos do topo. Botão "Explorar feed" continua levando direto ao feed. Cartões de imóveis, cores, carrossel, WhatsApp verde e funcionalidades inalterados; desktop preservado.
+
 ## O que é apenas demonstração
 - Todos os anúncios são fictícios; o WhatsApp não abre conversa real (sem números reais).
 - Anúncios do formulário não persistem.

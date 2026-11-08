@@ -11,12 +11,12 @@ export const Feed = ({ locais, sugestoes, busca, likedIds, onToggleLike, onVerMa
   const total = locais.length + sugestoes.length;
 
   return (
-    <section id="feed" className="bg-[#FAF6F0] text-[#221814] py-24 md:py-32 border-b border-[#221814]/10" data-testid="feed-section">
-      <div className="max-w-6xl mx-auto px-6 space-y-12">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#221814]/10 pb-6">
+    <section id="feed" className="bg-[#FAF6F0] text-[#221814] py-10 md:py-32 border-b border-[#221814]/10" data-testid="feed-section">
+      <div className="max-w-6xl mx-auto px-6 space-y-8 md:space-y-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-6 border-b border-[#221814]/10 pb-4 md:pb-6">
           <div>
             <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#E25C48]">Experiência social</span>
-            <h2 className="font-display uppercase tracking-tight text-[#221814] mt-1" style={{ fontSize: "clamp(32px, 4vw, 56px)" }}>
+            <h2 className="font-display uppercase tracking-tight text-[#221814] mt-1 text-[26px] md:text-[clamp(32px,4vw,56px)]">
               Feed de imóveis
             </h2>
           </div>

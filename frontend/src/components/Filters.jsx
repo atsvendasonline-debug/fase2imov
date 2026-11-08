@@ -21,7 +21,7 @@ export const Filters = ({ tipos, q, finalidade, tipo, faixa, onQChange, onFinali
   const faixaIdx = faixas.findIndex((f) => f.min === faixa.min && f.max === faixa.max);
 
   return (
-    <section id="filtros" className="bg-[#FAF6F0] text-[#221814] py-12 border-b border-[#221814]/10" data-testid="filters-section">
+    <section id="filtros" className="bg-[#FAF6F0] text-[#221814] py-6 md:py-12 border-b border-[#221814]/10" data-testid="filters-section">
       <div className="max-w-6xl mx-auto px-6">
         <form
           className="p-6 rounded-2xl bg-[#FAF6F0] border-2 border-[#221814] shadow-[4px_4px_0px_0px_#221814] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end"
