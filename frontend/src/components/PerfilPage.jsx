@@ -33,7 +33,7 @@ export const PerfilPage = () => (
         </div>
 
         <p className="text-sm text-[#221814]/70 leading-relaxed">
-          Nesta fase, o ImovLocal não tem cadastro nem login. Tudo o que você cria em "Meus anúncios" fica apenas nesta sessão do navegador e some ao recarregar a página.
+          Nesta fase, o ImovLocal não tem cadastro nem login. Os anúncios e as fotos reduzidas ficam guardados temporariamente nesta aba e continuam após atualizar a página. Fechar a aba apaga tudo; os dados não aparecem em outros aparelhos e as fotos não aparecem na prévia do WhatsApp.
         </p>
 
         <div className="p-4 rounded-2xl bg-[#FAF6F0] border border-[#221814]/10 flex gap-3">
