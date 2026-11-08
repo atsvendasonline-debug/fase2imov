@@ -128,16 +128,6 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
         <figcaption className="absolute bottom-3 left-3 right-3 text-xs uppercase tracking-[0.14em] text-[#221814]/80 bg-[#FAF6F0]/85 p-2 rounded backdrop-blur">
           {listing.legenda}
         </figcaption>
-
-        <Link
-          to={imovelUrl}
-          className="absolute inset-x-0 top-0 bottom-14 flex items-end justify-center pb-16 opacity-0 hover:opacity-100 transition-opacity bg-gradient-to-t from-[#221814]/40 to-transparent"
-          data-testid={`abrir-imovel-${listing.id}`}
-        >
-          <span className="px-4 py-2 rounded-full bg-[#FAF6F0]/90 backdrop-blur font-mono text-[11px] uppercase tracking-wider text-[#221814] font-semibold">
-            Ver imóvel
-          </span>
-        </Link>
       </figure>
 
       <div className="p-4 space-y-3 bg-[#FAF6F0] flex-1 flex flex-col justify-between">
@@ -163,6 +153,13 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
             {copied ? <LinkIcon className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
             {copied ? "Copiado" : "Compartilhar"}
           </button>
+          <Link
+            to={imovelUrl}
+            className="ml-auto px-3.5 py-1.5 rounded-full border border-[#221814] font-mono text-xs uppercase tracking-wider font-bold text-[#221814] hover:bg-[#221814] hover:text-[#FAF6F0] transition-colors"
+            data-testid={`ver-detalhe-${listing.id}`}
+          >
+            Ver detalhe
+          </Link>
         </div>
 
         <div className="pt-2 border-t border-[#221814]/10 flex items-center justify-between gap-2">
