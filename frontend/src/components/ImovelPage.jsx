@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import useEmblaCarousel from "embla-carousel-react";
-import { ArrowLeft, ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin, BedDouble, Bath, Car, Ruler } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin, BedDouble, Bath, Car, Ruler, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
@@ -59,7 +59,7 @@ export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
     };
     if (isDemo) {
       toast.info("Anúncio de demonstração", {
-        description: "Este link abre a página do anúncio neste navegador. Prévia com foto nas redes só funciona em anúncios pré-cadastrados.",
+        description: "Este link abre a página do anúncio neste navegador. A foto aparece aqui, mas não na prévia do WhatsApp (precisa de armazenamento público, que será ativado na fase 2).",
       });
     }
     if (navigator.share) {
@@ -128,7 +128,12 @@ export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
 
   return (
     <div className="bg-[#FAF6F0] min-h-screen selection:bg-[#E25C48]/20 selection:text-[#B83D2B]">
-      <Seo title={seoTitle} description={seoDesc} url={shareUrl} image={listing.fotos[0]?.replace("w=960&h=1200", "w=1200&h=630")} />
+      <Seo
+        title={seoTitle}
+        description={seoDesc}
+        url={shareUrl}
+        image={isDemo ? undefined : listing.fotos[0]?.replace("w=960&h=1200", "w=1200&h=630")}
+      />
       <Header />
 
       <main className="max-w-5xl mx-auto px-6 py-8 md:py-12 space-y-8" data-testid="imovel-page">
@@ -138,28 +143,37 @@ export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           <figure className="lg:col-span-3 relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#E9E0D2] border border-[#221814]/15" data-testid="imovel-fotos">
-            <div className="overflow-hidden h-full" ref={emblaRef}>
-              <div className="flex h-full">
-                {listing.fotos.map((src, i) => (
-                  <div key={src} className="flex-[0_0_100%] min-w-0 h-full">
-                    <img src={src} alt={`${listing.tipo} em ${listing.bairro}, ${listing.cidade} — foto ${i + 1}`} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
-                  </div>
-                ))}
-              </div>
-            </div>
-            {listing.fotos.length > 1 && (
+            {listing.fotos.length > 0 ? (
               <>
-                <button type="button" aria-label="Foto anterior" onClick={() => { emblaApi?.scrollPrev(); setIndex((i) => (i - 1 + listing.fotos.length) % listing.fotos.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-prev-foto">
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button type="button" aria-label="Próxima foto" onClick={() => { emblaApi?.scrollNext(); setIndex((i) => (i + 1) % listing.fotos.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-next-foto">
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+                <div className="overflow-hidden h-full" ref={emblaRef}>
+                  <div className="flex h-full">
+                    {listing.fotos.map((src, i) => (
+                      <div key={src} className="flex-[0_0_100%] min-w-0 h-full">
+                        <img src={src} alt={`${listing.tipo} em ${listing.bairro}, ${listing.cidade} — foto ${i + 1}`} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {listing.fotos.length > 1 && (
+                  <>
+                    <button type="button" aria-label="Foto anterior" onClick={() => { emblaApi?.scrollPrev(); setIndex((i) => (i - 1 + listing.fotos.length) % listing.fotos.length); }} className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-prev-foto">
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button type="button" aria-label="Próxima foto" onClick={() => { emblaApi?.scrollNext(); setIndex((i) => (i + 1) % listing.fotos.length); }} className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors" data-testid="imovel-next-foto">
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </>
+                )}
+                <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">
+                  {index + 1}/{listing.fotos.length}
+                </span>
               </>
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#221814]/40">
+                <ImagePlus className="w-10 h-10" />
+                <span className="font-mono text-[10px] uppercase tracking-wider">Sem foto (demonstração)</span>
+              </div>
             )}
-            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">
-              {index + 1}/{listing.fotos.length}
-            </span>
           </figure>
 
           <div className="lg:col-span-2 space-y-6">

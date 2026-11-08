@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, Share2, Link as LinkIcon, MessageCircle, MapPin, ImagePlus } from "lucide-react";
 import { toast } from "sonner";
 import { formatPreco, buildWaLink, initials } from "../lib/format";
 
@@ -26,7 +26,7 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
     };
     if (isDemo) {
       toast.info("Anúncio de demonstração", {
-        description: "Este link abre a página do anúncio neste navegador. Prévia com foto nas redes só funciona em anúncios pré-cadastrados.",
+        description: "Este link abre a página do anúncio neste navegador. Fotos enviadas localmente não aparecem na prévia do WhatsApp (precisam de armazenamento público, que só será ativado na fase 2).",
       });
     }
     if (navigator.share) {
@@ -75,43 +75,54 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
       </div>
 
       <figure className="relative aspect-[4/5] bg-[#E9E0D2]" data-testid={`fotos-${listing.id}`}>
-        <div className="overflow-hidden h-full" ref={emblaRef}>
-          <div className="flex h-full">
-            {listing.fotos.map((src, i) => (
-              <div key={src} className="flex-[0_0_100%] min-w-0 h-full">
-                <img src={src} alt={`${listing.tipo} em ${listing.bairro}, ${listing.cidade} — foto ${i + 1}`} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {listing.fotos.length > 1 && (
+        {listing.fotos.length > 0 ? (
           <>
-            <button
-              type="button"
-              aria-label="Foto anterior"
-              onClick={() => { emblaApi?.scrollPrev(); setIndex((i) => (i - 1 + listing.fotos.length) % listing.fotos.length); }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors"
-              data-testid={`prev-foto-${listing.id}`}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              aria-label="Próxima foto"
-              onClick={() => { emblaApi?.scrollNext(); setIndex((i) => (i + 1) % listing.fotos.length); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors"
-              data-testid={`next-foto-${listing.id}`}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+            <div className="overflow-hidden h-full" ref={emblaRef}>
+              <div className="flex h-full">
+                {listing.fotos.map((src, i) => (
+                  <div key={src} className="flex-[0_0_100%] min-w-0 h-full">
+                    <img src={src} alt={`${listing.tipo} em ${listing.bairro}, ${listing.cidade} — foto ${i + 1}`} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {listing.fotos.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Foto anterior"
+                  onClick={() => { emblaApi?.scrollPrev(); setIndex((i) => (i - 1 + listing.fotos.length) % listing.fotos.length); }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors"
+                  data-testid={`prev-foto-${listing.id}`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Próxima foto"
+                  onClick={() => { emblaApi?.scrollNext(); setIndex((i) => (i + 1) % listing.fotos.length); }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#FAF6F0]/80 backdrop-blur flex items-center justify-center text-[#221814] hover:bg-[#FAF6F0] transition-colors"
+                  data-testid={`next-foto-${listing.id}`}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </>
+            )}
           </>
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[#221814]/40">
+            <ImagePlus className="w-10 h-10" />
+            <span className="font-mono text-[10px] uppercase tracking-wider">Sem foto (demonstração)</span>
+          </div>
         )}
 
         <div className="absolute top-3 left-3 right-3 flex justify-between items-start pointer-events-none">
-          <span className="px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">
-            {index + 1}/{listing.fotos.length}
-          </span>
+          {listing.fotos.length > 0 && (
+            <span className="px-2.5 py-1 rounded-md bg-[#221814]/80 backdrop-blur text-white font-mono text-xs font-semibold">
+              {index + 1}/{listing.fotos.length}
+            </span>
+          )}
           <span className={`px-2.5 py-1 rounded-md font-mono text-xs font-bold ${listing.finalidade === "aluguel" ? "bg-[#E25C48] text-white" : "bg-[#221814] text-white"}`}>
             {formatPreco(listing)}
           </span>

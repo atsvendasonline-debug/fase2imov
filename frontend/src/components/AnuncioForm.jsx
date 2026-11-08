@@ -6,7 +6,6 @@ const inputClass =
   "w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]";
 
 const TIPOS = ["Apartamento", "Casa", "Casa Condomínio", "Studio", "Loft", "Cobertura", "Kitnet", "Terreno", "Sala", "Salão", "Loja", "Galpão", "Chácara", "Fazenda"];
-const FOTO_DEMO = "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=960&h=1200";
 
 const VAZIO = {
   anunciante: "", cidade: "", bairro: "", estado: "", tipo: "Apartamento",
@@ -39,9 +38,9 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
     }
     setEnviando(true);
     try {
-      // Demonstração: sempre usa fotos públicas de exemplo. Fotos enviadas
-      // localmente (blob:) não persistem nem funcionam na prévia social.
-      const fotosFinal = inicial?.fotos || [FOTO_DEMO];
+      // Demonstração: usa as fotos enviadas (blob: URLs) durante a sessão.
+      // Se não houver fotos, o anúncio fica sem imagem (estado vazio).
+      const fotosFinal = fotos.length > 0 ? fotos.map((f) => f.url) : (inicial?.fotos || []);
       await onSalvar({
         ...form,
         preco,
@@ -122,7 +121,7 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
         <label htmlFor="f-fotos" className="block p-6 rounded-xl border-2 border-dashed border-[#221814]/20 text-center bg-[#FAF6F0] cursor-pointer hover:border-[#E25C48] transition-colors" data-testid="anunciar-fotos-dropzone">
           <ImagePlus className="w-6 h-6 mx-auto mb-2 text-[#221814]/40" />
           <span className="font-mono text-xs text-[#221814]/60">
-            {fotos.length > 0 ? `${fotos.length} foto(s) selecionada(s) — o anúncio de demonstração usará fotos públicas de exemplo` : "Selecione fotos para pré-visualizar (demonstração: o anúncio salvo usa fotos públicas de exemplo)"}
+            {fotos.length > 0 ? `${fotos.length} foto(s) selecionada(s) — visível nesta sessão, mas não na prévia do WhatsApp` : "Selecione fotos do seu dispositivo (visível nesta sessão, mas não na prévia do WhatsApp)"}
           </span>
         </label>
         <input id="f-fotos" type="file" accept="image/*" multiple className="hidden" onChange={handleFotos} data-testid="anunciar-fotos-input" />
