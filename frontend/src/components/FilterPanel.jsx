@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { X } from "lucide-react";
-import { CATEGORIAS_TIPO, MATCH_POR_ROTULO, FILTROS_VAZIOS } from "../lib/filterOptions";
+import { CATEGORIAS_TIPO, FILTROS_VAZIOS } from "../lib/filterOptions";
 
 const inputClass =
   "w-full p-3 rounded-xl bg-[#FAF6F0] border border-[#221814]/20 font-mono text-xs text-[#221814] focus:outline-none focus:border-[#E25C48]";
@@ -104,21 +104,16 @@ export const FilterPanel = ({ open, onOpenChange, filtros, setFiltros, onAplicar
                 <span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#E25C48] mb-2">{cat.nome}</span>
                 <div className="flex flex-wrap gap-2">
                   {cat.tipos.map((t) => {
-                    const semDados = MATCH_POR_ROTULO[t.nome].length === 0;
                     const ativo = filtros.tipos.includes(t.nome);
                     return (
                       <button
                         key={t.nome}
                         type="button"
-                        disabled={semDados}
                         onClick={() => toggleTipo(t.nome)}
-                        title={semDados ? "Ainda não há anúncios de demonstração deste tipo" : undefined}
                         className={`px-3 py-1.5 rounded-lg font-mono text-xs transition-colors ${
                           ativo
                             ? "bg-[#E25C48] text-white font-semibold"
-                            : semDados
-                              ? "bg-[#F0E8DC] border border-[#221814]/10 text-[#221814]/35 cursor-not-allowed"
-                              : "bg-[#FAF6F0] border border-[#221814]/20 text-[#221814] hover:border-[#221814]"
+                            : "bg-[#FAF6F0] border border-[#221814]/20 text-[#221814] hover:border-[#221814]"
                         }`}
                         data-testid={`tipo-chip-${t.nome.split(" ")[0].replace(".", "").toLowerCase()}`}
                       >

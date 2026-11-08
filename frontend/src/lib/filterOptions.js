@@ -10,20 +10,20 @@ export const CATEGORIAS_TIPO = [
       { nome: "Apartamento", match: ["Apartamento"] },
       { nome: "Apto. Cobertura / Duplex", match: ["Cobertura"] },
       { nome: "Casa", match: ["Casa"] },
-      { nome: "Casa Condomínio", match: [] },
+      { nome: "Casa Condomínio", match: ["Casa Condomínio"] },
       { nome: "Kitnet", match: ["Kitnet"] },
-      { nome: "Terreno", match: [] },
+      { nome: "Terreno", match: ["Terreno"] },
     ],
   },
   {
     nome: "Comercial",
-    tipos: [{ nome: "Sala / Salão / Loja / Galpão", match: [] }],
+    tipos: [{ nome: "Sala / Salão / Loja / Galpão", match: ["Sala", "Salão", "Loja", "Galpão"] }],
   },
   {
     nome: "Rural",
     tipos: [
-      { nome: "Chácara", match: [] },
-      { nome: "Fazenda", match: [] },
+      { nome: "Chácara", match: ["Chácara"] },
+      { nome: "Fazenda", match: ["Fazenda"] },
     ],
   },
 ];

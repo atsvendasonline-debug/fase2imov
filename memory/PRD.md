@@ -25,6 +25,7 @@ MVP responsivo de um portal brasileiro de imóveis com experiência social (feed
 
 - 2026-02 (ajuste mobile): tela inicial mobile encurtada — trilha lateral e parágrafo do hero ocultos no celular, título menor, paddings reduzidos (hero, marquee, filtros, feed), busca e primeiro anúncio bem mais próximos do topo. Botão "Explorar feed" continua levando direto ao feed. Cartões de imóveis, cores, carrossel, WhatsApp verde e funcionalidades inalterados; desktop preservado.
 - 2026-02 (busca detalhada): painel "Busca detalhada" (sheet lateral, rolável, rodapé fixo) com finalidade (venda/aluguel/temporada), localização (estado/cidade/bairro), tipos por categoria com múltipla seleção, faixa de preço, quartos/banheiros/vagas mínimos, área mín/máx e palavra-chave na descrição. Chips de filtros ativos removíveis no feed, contagem de resultados, estado vazio com botão "Limpar filtros". Backend ganhou banheiros/vagas nos anúncios e todos os parâmetros de filtro. Testado em 390px e 1920px.
+- 2026-02 (ajuste filtros): todas as opções de tipo e finalidade ficaram selecionáveis (inclusive Temporada e tipos sem anúncio fictício); quando não há resultado, o feed mostra "Ainda não há anúncios deste tipo nesta região" com opção de limpar. Nenhum imóvel fictício novo foi criado.
 
 ## O que é apenas demonstração
 - Todos os anúncios são fictícios; o WhatsApp não abre conversa real (sem números reais).

@@ -60,7 +60,7 @@ export const Feed = ({ locais, sugestoes, busca, likedIds, onToggleLike, onVerMa
           <div className="flex flex-col items-center gap-4 py-16 text-center" data-testid="empty-feed-message">
             <MapPinOff className="w-10 h-10 text-[#221814]/30" />
             <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#221814]/60">
-              Nenhum anúncio de demonstração encontrado com esses filtros.
+              Ainda não há anúncios deste tipo nesta região.
             </p>
             <p className="text-sm text-[#221814]/70 max-w-md">
               Tente ampliar a faixa de preço, remover algum tipo de imóvel ou palavra-chave. Nesta fase, todos os imóveis são fictícios e servem apenas para demonstrar a experiência.
