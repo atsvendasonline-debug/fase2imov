@@ -13,7 +13,7 @@ const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const fmtMoeda = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
-export const ImovelPage = ({ likedIds, onToggleLike }) => {
+export const ImovelPage = ({ likedIds, onToggleLike, demoListings = [] }) => {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
   const [erro, setErro] = useState(false);
@@ -26,14 +26,29 @@ export const ImovelPage = ({ likedIds, onToggleLike }) => {
     setLoading(true);
     setErro(false);
     setListing(null);
+    // Fonte unificada: primeiro os anúncios demo em memória (Meus anúncios),
+    // depois os anúncios pré-cadastrados do backend.
+    const demo = demoListings.find((x) => x.id === id);
+    if (demo) {
+      setListing(demo);
+      setLoading(false);
+      window.scrollTo(0, 0);
+      return;
+    }
     axios.get(`${API}/listings/${id}`)
       .then(({ data }) => setListing(data))
       .catch(() => setErro(true))
       .finally(() => setLoading(false));
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [id, demoListings]);
 
-  const shareUrl = `${process.env.REACT_APP_BACKEND_URL}/api/share/imovel/${id}`;
+  // Anúncios pré-cadastrados usam a rota /api/share/... com metadados OG
+  // servidos pelo backend. Anúncios demo (Meus anúncios) existem só no
+  // navegador, então o compartilhamento usa a URL direta /imovel/{id}.
+  const isDemo = id.startsWith("demo-");
+  const shareUrl = isDemo
+    ? `${window.location.origin}/imovel/${id}`
+    : `${process.env.REACT_APP_BACKEND_URL}/api/share/imovel/${id}`;
 
   const handleShare = async () => {
     if (!listing) return;
@@ -42,6 +57,11 @@ export const ImovelPage = ({ likedIds, onToggleLike }) => {
       text: `${listing.tipo} em ${listing.bairro}, ${listing.cidade} por ${formatPreco(listing)} — ImovLocal (demonstração)`,
       url: shareUrl,
     };
+    if (isDemo) {
+      toast.info("Anúncio de demonstração", {
+        description: "Este link abre a página do anúncio neste navegador. Prévia com foto nas redes só funciona em anúncios pré-cadastrados.",
+      });
+    }
     if (navigator.share) {
       try { await navigator.share(data); return; } catch { return; }
     }

@@ -12,7 +12,10 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
   const [index, setIndex] = useState(0);
   const [copied, setCopied] = useState(false);
 
-  const shareUrl = `${process.env.REACT_APP_BACKEND_URL}/api/share/imovel/${listing.id}`;
+  const isDemo = listing.id.startsWith("demo-");
+  const shareUrl = isDemo
+    ? `${window.location.origin}/imovel/${listing.id}`
+    : `${process.env.REACT_APP_BACKEND_URL}/api/share/imovel/${listing.id}`;
   const imovelUrl = `/imovel/${listing.id}`;
 
   const handleShare = async () => {
@@ -21,6 +24,11 @@ export const FeedCard = ({ listing, liked, onToggleLike, onVerMapa }) => {
       text: `${listing.tipo} em ${listing.bairro}, ${listing.cidade} por ${formatPreco(listing)} — ImovLocal (demonstração)`,
       url: shareUrl,
     };
+    if (isDemo) {
+      toast.info("Anúncio de demonstração", {
+        description: "Este link abre a página do anúncio neste navegador. Prévia com foto nas redes só funciona em anúncios pré-cadastrados.",
+      });
+    }
     if (navigator.share) {
       try {
         await navigator.share(data);

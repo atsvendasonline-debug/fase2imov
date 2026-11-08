@@ -21,6 +21,23 @@ import { FILTROS_VAZIOS, MATCH_POR_ROTULO } from "@/lib/filterOptions";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
+// Persistência de sessão para os anúncios demo (Meus anúncios): mantém
+// durante a navegação e ao voltar ao feed, mas some ao recarregar a página.
+const carregarDemo = () => {
+  try {
+    const raw = sessionStorage.getItem("imovlocal_demo");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+};
+
+const salvarDemo = (lista) => {
+  try {
+    sessionStorage.setItem("imovlocal_demo", JSON.stringify(lista));
+  } catch {}
+};
+
 const fmtMoeda = (v) => Number(v).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 function montarChips(f) {
@@ -183,7 +200,15 @@ const Home = ({ seo, likedIds, onToggleLike, demoListings, onDemoCriado }) => {
 
 function App() {
   const [likedIds, setLikedIds] = useState(new Set());
-  const [demoListings, setDemoListings] = useState([]);
+  const [demoListings, setDemoListingsState] = useState(carregarDemo);
+
+  const setDemoListings = (fn) => {
+    setDemoListingsState((prev) => {
+      const next = typeof fn === "function" ? fn(prev) : fn;
+      salvarDemo(next);
+      return next;
+    });
+  };
 
   const handleToggleLike = (id) => {
     setLikedIds((prev) => {
@@ -219,7 +244,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Home seo={{}} likedIds={likedIds} onToggleLike={handleToggleLike} demoListings={demoListings} onDemoCriado={handleDemoSalvar} />} />
-            <Route path="/imovel/:id" element={<ImovelPage likedIds={likedIds} onToggleLike={handleToggleLike} />} />
+            <Route path="/imovel/:id" element={<ImovelPage likedIds={likedIds} onToggleLike={handleToggleLike} demoListings={demoListings} />} />
             <Route path="/meus-anuncios" element={<MeusAnunciosPage demoListings={demoListings} onSalvar={handleDemoSalvar} onRemover={handleDemoRemover} likedIds={likedIds} onToggleLike={handleToggleLike} />} />
             <Route path="/perfil" element={<PerfilPage />} />
           </Routes>

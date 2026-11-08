@@ -24,6 +24,9 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
 
   const handleFotos = (e) => {
     const files = Array.from(e.target.files || []).slice(0, 5);
+    // Pré-visualização local (blob:) apenas para mostrar as fotos escolhidas.
+    // Na demonstração, o anúncio salvo usa as fotos públicas de exemplo,
+    // porque blob: não é uma URL pública e some ao navegar/recarregar.
     setFotos(files.map((f) => ({ nome: f.name, url: URL.createObjectURL(f) })));
   };
 
@@ -36,7 +39,9 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
     }
     setEnviando(true);
     try {
-      const fotosFinal = fotos.length > 0 ? fotos.map((f) => f.url) : (inicial?.fotos || [FOTO_DEMO]);
+      // Demonstração: sempre usa fotos públicas de exemplo. Fotos enviadas
+      // localmente (blob:) não persistem nem funcionam na prévia social.
+      const fotosFinal = inicial?.fotos || [FOTO_DEMO];
       await onSalvar({
         ...form,
         preco,
@@ -117,7 +122,7 @@ export const AnuncioForm = ({ inicial, onSalvar, onCancelar, rotuloBotao = "Publ
         <label htmlFor="f-fotos" className="block p-6 rounded-xl border-2 border-dashed border-[#221814]/20 text-center bg-[#FAF6F0] cursor-pointer hover:border-[#E25C48] transition-colors" data-testid="anunciar-fotos-dropzone">
           <ImagePlus className="w-6 h-6 mx-auto mb-2 text-[#221814]/40" />
           <span className="font-mono text-xs text-[#221814]/60">
-            {fotos.length > 0 ? `${fotos.length} foto(s) selecionada(s)` : "Selecione fotos verticais do seu dispositivo (só ficam neste navegador)"}
+            {fotos.length > 0 ? `${fotos.length} foto(s) selecionada(s) — o anúncio de demonstração usará fotos públicas de exemplo` : "Selecione fotos para pré-visualizar (demonstração: o anúncio salvo usa fotos públicas de exemplo)"}
           </span>
         </label>
         <input id="f-fotos" type="file" accept="image/*" multiple className="hidden" onChange={handleFotos} data-testid="anunciar-fotos-input" />
