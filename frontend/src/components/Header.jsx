@@ -31,7 +31,7 @@ export const Header = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {home ? (
+          {home && (
             <a
               href="#feed"
               className="px-5 py-2.5 rounded-full bg-[#E25C48] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-semibold hover:bg-[#B83D2B] transition-colors shadow-sm"
@@ -39,15 +39,18 @@ export const Header = () => {
             >
               Explorar Feed
             </a>
-          ) : (
-            <Link
-              to="/meus-anuncios"
-              className="px-5 py-2.5 rounded-full bg-[#E25C48] text-[#FAF6F0] font-mono text-xs uppercase tracking-[0.14em] font-semibold hover:bg-[#B83D2B] transition-colors shadow-sm"
-              data-testid="header-meus-anuncios-button"
-            >
-              Meus anúncios
-            </Link>
           )}
+          <Link
+            to="/meus-anuncios"
+            className={`px-5 py-2.5 rounded-full font-mono text-xs uppercase tracking-[0.14em] font-semibold transition-colors shadow-sm ${
+              home
+                ? "border border-[#E25C48] text-[#E25C48] hover:bg-[#E25C48] hover:text-[#FAF6F0]"
+                : "bg-[#E25C48] text-[#FAF6F0] hover:bg-[#B83D2B]"
+            }`}
+            data-testid="header-meus-anuncios-button"
+          >
+            Meus anúncios
+          </Link>
         </div>
       </nav>
     </header>
